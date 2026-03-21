@@ -1,49 +1,42 @@
 ﻿#include <iostream>
-#include <limits>
 #include <format>
-
-using std::cout;
-using std::cin;
-using std::format;
+#include <random>
+using namespace std;
 
 void test1() {
-    //4.12
-    //(Bar - Chart Printing Program) One interesting application of computers is to dis -
-    //play graphs and bar charts.Write an application that reads five numbers between 1 and
-    //30. For each number that’s read, your program should display the same number of adja -
-    //cent asterisks.For example, if your program reads the number 7, it should display
-    //******* .Display the bars of asterisks after you read all five numbers
+    default_random_engine engine{};
+    uniform_int_distribution randomizer{1, 6};
 
-    //vector<int> inputs{};
-    //for (int i{0}; i < 5; ++i) {
-    //    int x{0};
-    //    do {
-    //        cout << format("Input number {}: ", i + 1);
-    //        cin >> x;
-    //    } while (x < 1 || x > 30);
-    //    inputs.push_back(x);
-    //}
+    auto turn{0};
+    auto point{0};
+    do {
+        ++turn;
+        auto d1 = randomizer(engine);
+        auto d2 = randomizer(engine);
+        cout << format("Player rolled {} + {} = {}\n", d1, d2, d1 + d2);
+        auto sum = d1 + d2;
 
-    //cout << "Graphs:\n";
-    //for (int i{0}; i < inputs.size(); ++i) {
-    //    cout << format("{:2}: ", inputs[i]);
-    //    for (int j{0}; j < inputs[i]; ++j) {
-    //        cout << '*';
-    //    }
-    //    cout << '\n';
-    //}
-
-    //// (Calculating the Value of π) 
-    //double v{ 0.0 };
-    //int terms{ 100 };
-    //cout << format("Accuracy at {} terms\n", terms);
-    //cout << format("{:<10} {:<}\n", "term", "pi");
-    //for (int i{ 0 }, delim{ 1 }; i < terms; ++i) {
-    //    int sign{ i % 2 == 1 ? -1 : 1 };
-    //    v += sign * 4.0 / delim;
-    //    delim += 2;
-    //    cout << format("{:<10} {:<.8f}\n", i + 1, v);
-    //}
+        if (turn == 1) {
+            if (sum == 7 || sum == 11) {
+                cout << "Player wins!\n";
+                break;
+            }
+            else if (sum == 2 || sum == 3 || sum == 12) {
+                cout << "Player loses!\n";
+                break;
+            }
+            else {
+                point = sum;
+                cout << format("Player point is {}\n", point);
+            }
+        }
+        else {
+            if (sum == point) {
+                cout << "Player wins!\n";
+                break;
+            }
+        }
+    } while (1);
 }
 
 int main() {
