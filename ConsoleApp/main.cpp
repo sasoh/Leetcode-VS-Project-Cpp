@@ -3,43 +3,58 @@
 #include <random>
 using namespace std;
 
-void test1() {
-    default_random_engine engine{};
-    uniform_int_distribution randomizer{1, 6};
+//int rollDice() {
+//    static default_random_engine engine{};
+//    static uniform_int_distribution randomizer{ 1, 6 };
+//    auto d1 = randomizer(engine);
+//    auto d2 = randomizer(engine);
+//    cout << format("Player rolled {} + {} = {}\n", d1, d2, d1 + d2);
+//    return  d1 + d2;
+//}
+//
+//void test1() {
+//    enum class Status { keepRolling, won, lost };
+//    Status gameStatus{ Status::keepRolling };
+//    int point{ 0 };
+//
+//    switch (const int sum{ rollDice() }) {
+//        case 7:
+//        case 11:
+//            gameStatus = Status::won;
+//            break;
+//        case 2:
+//        case 3:
+//        case 12:
+//            gameStatus = Status::lost;
+//            break;
+//        default:
+//            point = sum;
+//            cout << format("Point is {}\n", point);
+//    }
+//    while (gameStatus == Status::keepRolling) {
+//        if (const int sum{ rollDice() }; sum == point) {
+//            gameStatus = Status::won;
+//            cout << format("Player won!\n");
+//        }
+//        else if (sum == 7) {
+//            gameStatus = Status::lost;
+//            cout << format("Player lost!\n");
+//        }
+//    }
+//}
 
-    auto turn{0};
-    auto point{0};
-    do {
-        ++turn;
-        auto d1 = randomizer(engine);
-        auto d2 = randomizer(engine);
-        cout << format("Player rolled {} + {} = {}\n", d1, d2, d1 + d2);
-        auto sum = d1 + d2;
-
-        if (turn == 1) {
-            if (sum == 7 || sum == 11) {
-                cout << "Player wins!\n";
-                break;
-            }
-            else if (sum == 2 || sum == 3 || sum == 12) {
-                cout << "Player loses!\n";
-                break;
-            }
-            else {
-                point = sum;
-                cout << format("Player point is {}\n", point);
-            }
-        }
-        else {
-            if (sum == point) {
-                cout << "Player wins!\n";
-                break;
-            }
-        }
-    } while (1);
+// Hanoi towers
+void hanoi(int numberToMove, int startPeg, int targetPeg, int temporaryPeg) {
+    if (numberToMove == 1) {
+        cout << startPeg << " -> " << targetPeg << "\n";
+        return;
+    }
+    hanoi(numberToMove - 1, startPeg, temporaryPeg, targetPeg);
+    cout << startPeg << " -> " << targetPeg << "\n";
+    hanoi(numberToMove - 1, temporaryPeg, targetPeg, startPeg);
 }
 
 int main() {
-    test1();
+    hanoi(3, 1, 2, 3);
     return 0;
 }
