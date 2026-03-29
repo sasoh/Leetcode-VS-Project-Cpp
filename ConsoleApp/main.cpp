@@ -1,37 +1,23 @@
 ﻿#include <iostream>
-#include <span>
-#include <array>
 #include <vector>
+#include <format>
+#include "Square.h"
 using namespace std;
 
-//void spanCArrayFunction(int a[]) {
-//    span<int, 4> b{a};
-//}
-
-void spanArrayFunction(array<int, 4> a) {
-    span<int, 4> b{ a };
-}
-
-std::string smash(const vector<string>& words)
-{
-    string sentence{};
-    for (auto i{ 0 }; i < words.size(); ++i) {
-        sentence.append(words[i]);
-        if (i < words.size() - 1) {
-            sentence.append(" ");
-        }
-    }
-    return sentence;
-}
-
 int main() {
-    //int a[]{ 1, 2, 4, 6 };
-    //span<int> b{a};
+    vector<Square> squares{
+        Square{1}, Square{2}, Square{4}, Square{10}, Square{15}
+    };
 
-    array<int, 4> a{ 1, 2, 5, 12 };
-    span<int> b{a};
+    for (const auto& s : squares) {
+        cout << format(
+            "Square with side = {:<4} area = {:<4} perimeter = {:<4} diagonal = {:<4.2f}\n",
+            s.getSide(),
+            s.getArea(),
+            s.getPerimeter(),
+            s.getDiagonal()
+        );
+    }
 
-    cout << b[2] << '\n';
-    
     return 0;
 }
