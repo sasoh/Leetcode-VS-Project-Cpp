@@ -1,28 +1,25 @@
 ﻿#include <iostream>
-#include <vector>
-#include <format>
-#include "Complex.h"
+#include "IntegerSet.h"
 using namespace std;
 
 int main() {
-    vector<Complex> c{
-        Complex{}, Complex{1, 1}, Complex{2, 4}, Complex{5, 5} 
-    };
+    IntegerSet s1{};
+    cout << s1.toString();
 
-    //for (const auto& i : c) {
-    //    cout << format("{}\n", i.toString());
-    //}
+    IntegerSet s2{ {0, 1, 10, 20, 30, 50} };
+    cout << s2.toString();
 
-    auto c1 = *(c.end() - 1);
-    auto c2 = c[1];
+    IntegerSet s3{ {0, 1, 11, 12, 13, 14, 15} };
+    cout << s3.toString();
 
-    cout << format("{} - {} = ", c1.toString(), c2.toString());
-    c1.subtract(c2);
-    cout << format("{}\n", c1.toString());
+    IntegerSet s4 = s2.unionOfSets(s3);
+    cout << s4.toString();
 
-    cout << format("{} + {} = ", c1.toString(), c2.toString());
-    c1.add(c2);
-    cout << format("{}\n", c1.toString());
+    IntegerSet s5 = s2.intersectionOfSets(s3);
+    cout << s5.toString();
+
+    s5.insertElement(2);
+    cout << s5.toString();
 
     return 0;
 }
