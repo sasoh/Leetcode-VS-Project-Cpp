@@ -3,23 +3,30 @@
 using namespace std;
 
 int main() {
-    IntegerSet s1{};
-    cout << s1.toString();
+    IntegerSet empty{};
+    cout << empty.toString();
 
-    IntegerSet s2{ {0, 1, 10, 20, 30, 50} };
-    cout << s2.toString();
+    IntegerSet someValues{ {0, 1, 2, 3, 4} };
+    cout << someValues.toString();
 
-    IntegerSet s3{ {0, 1, 11, 12, 13, 14, 15} };
-    cout << s3.toString();
+    IntegerSet otherValues{ {1, 5, 6, 7, 8} };
+    cout << otherValues.toString();
 
-    IntegerSet s4 = s2.unionOfSets(s3);
-    cout << s4.toString();
+    //IntegerSet unionOfValues = someValues.unionOfSets(otherValues);
+    //cout << unionOfValues.toString();
 
-    IntegerSet s5 = s2.intersectionOfSets(s3);
-    cout << s5.toString();
+    //IntegerSet intersectionOfValues = someValues.intersectionOfSets(otherValues);
+    //cout << intersectionOfValues.toString();
 
-    s5.insertElement(2);
-    cout << s5.toString();
+    //intersectionOfValues.insertElement(2);
+    //cout << intersectionOfValues.toString();
+
+    cout << "Operator overloads:\n";
+    IntegerSet sumValue = IntegerSet{someValues} + otherValues;
+    cout << sumValue.toString();
+
+    IntegerSet differenceValue = sumValue - otherValues;
+    cout << differenceValue.toString();
 
     return 0;
 }

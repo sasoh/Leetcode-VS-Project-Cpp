@@ -57,3 +57,20 @@ std::string IntegerSet::toString() const
     r.append("\n");
     return r;
 }
+
+IntegerSet operator+(const IntegerSet& some, const IntegerSet& other)
+{
+    IntegerSet r{ some };
+    return r.unionOfSets(other);
+}
+
+IntegerSet operator-(const IntegerSet& some, const IntegerSet& other)
+{
+    IntegerSet r{ some };
+    for (auto i{ 0 }; i < some.m_ints.size(); ++i) {
+        if (other.m_ints[i]) {
+            r.m_ints[i] = false;
+        }
+    }
+    return r;
+}
