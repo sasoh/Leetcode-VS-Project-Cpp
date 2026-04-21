@@ -26,7 +26,7 @@ public:
     Matrix& operator=(Matrix&& other) noexcept {
         if (this != &other) {
             m_rows = std::exchange(other.m_rows, 0);
-            m_rows = std::exchange(other.m_rows, 0);
+            m_cols = std::exchange(other.m_cols, 0);
             m_m = std::move(other.m_m);
         }
         return *this;
@@ -66,6 +66,12 @@ public:
         return r;
     }
     // TODO: iterator
+    inline double* begin() const noexcept {
+        return m_m.get();
+    }
+    inline double* end() const noexcept {
+        return m_m.get() + m_cols * m_rows;
+    }
 private:
     int m_rows;
     int m_cols;
@@ -106,17 +112,24 @@ int main() {
     print_matrix(m1);
 
     auto m2(m1);
-    std::cout << "M2 (copy):\n";
+    std::cout << "M2 (copy construct):\n";
     print_matrix(m2);
     fill_with_random(m1, 0, 3);
     std::cout << "M1 after randomizing:\n";
     print_matrix(m1);
 
-    std::cout << "M1 + M2:\n";
-    print_matrix(m1 + m2);
+    std::cout << "M1 (10x):\n";
+    std::for_each(m1.begin(), m1.end(), [&](double& v) { v *= 10; });
+    print_matrix(m1);
 
-    std::cout << "M1 * M2:\n";
-    print_matrix(m1 * m2);
+    // copy assignment
+    m2 = m1;
+    std::cout << "M2 (copy assigment):\n";
+    print_matrix(m2);
+
+    std::cout << "M1 (randomize)\n";
+    fill_with_random(m1, 10, 20);
+    print_matrix(m1);
 
     return 0;
 }
