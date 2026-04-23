@@ -65,7 +65,6 @@ public:
         }
         return r;
     }
-    // TODO: iterator
     inline double* begin() const noexcept {
         return m_m.get();
     }
@@ -85,12 +84,8 @@ private:
 void fill_with_random(Matrix& m, double min_val, double max_val) {
     static default_random_engine e{};
     static uniform_real_distribution gen{ min_val, max_val };
-
-    // TODO: update to use iterator instead of conventional array
-    for (auto i{ 0 }; i < m.rows(); ++i) {
-        for (auto j{ 0 }; j < m.cols(); ++j) {
-            m(i, j) = gen(e);
-        }
+    for (auto& i : m) {
+        i = gen(e);
     }
 }
 
@@ -104,7 +99,7 @@ void print_matrix(const Matrix& m) {
 }
 
 int main() {
-    Matrix m1{3, 2};
+    Matrix m1{ 3, 2 };
     std::cout << "M1:\n";
     print_matrix(m1);
     fill_with_random(m1, 3, 10);
