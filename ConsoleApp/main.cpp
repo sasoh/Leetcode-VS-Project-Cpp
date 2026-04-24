@@ -1,19 +1,18 @@
 ﻿#include <iostream>
-#include <string>
 using namespace std;
 
-// Write a simple function template that prints a value of a generic type T. 
-// Write the template definition first using the keyword class and then change it to use the keyword typename. 
-// Explain the modern preference for typename in this context.
+// Create a function template named powerOfTwo that calculates 2^N where N is the input value of a generic type T. 
+// In a separate section of your code (or a separate file, conceptually), 
+// provide an explicit instantiation of this function template for the float type.
 
 template<typename T>
-void print(const T& v) {
-    cout << v << "\n";
+T powerOfTwo(const T& v) {
+    return v * v;
 }
 
 int main() {
-    print(3);
-    print(3.2);
-    print("GLB");
+    cout << powerOfTwo(4) << "\n";
+    cout << powerOfTwo(4.2) << "\n";
+    cout << powerOfTwo<float>(4.2f) << "\n";
     return 0;
 }
