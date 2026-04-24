@@ -11,10 +11,13 @@
 //erator to perform your calculations.Test your code with a container of ints, a container
 //of doubles and a container of strings.
 
-template<typename T, typename S> requires std::ranges::input_range<S>
+template<typename T, std::ranges::input_range S>
+    requires requires (T sum, std::ranges::range_value_t<S> v) {
+    sum += v;
+}
 T sumRange(const S& range) {
     T sum{};
-    for (const T& v : range) {
+    for (const auto& v : range) {
         sum += v;
     }
     return sum;
