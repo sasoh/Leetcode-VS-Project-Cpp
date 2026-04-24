@@ -13,7 +13,7 @@
 
 template<typename T, typename S> requires std::ranges::input_range<S>
 T sumRange(const S& range) {
-    T sum{0};
+    T sum{};
     for (const T& v : range) {
         sum += v;
     }
