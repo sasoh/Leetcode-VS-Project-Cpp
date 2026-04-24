@@ -2,17 +2,18 @@
 #include <string>
 using namespace std;
 
-// Write a function template named combine that accepts two values of the same type T
-// and returns the result of applying the addition operator (+) to them. 
-// Test the function with int (which performs addition) and with std::string (which performs concatenation).
+// Write a simple function template that prints a value of a generic type T. 
+// Write the template definition first using the keyword class and then change it to use the keyword typename. 
+// Explain the modern preference for typename in this context.
 
 template<typename T>
-T combine(const T& a, const T& b) {
-    return a + b;
+void print(const T& v) {
+    cout << v << "\n";
 }
 
 int main() {
-    cout << "Sum = " << combine(3, 5) << "\n";
-    cout << "Sum = " << combine("efji"s, "grhbfu"s) << "\n";
+    print(3);
+    print(3.2);
+    print("GLB");
     return 0;
 }
