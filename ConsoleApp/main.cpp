@@ -1,59 +1,43 @@
-﻿#include <vector>
-#include <ranges>
-#include <stdexcept>
-#include <algorithm>
-#include <iterator>
+﻿#include <iterator>
 #include <iostream>
+#include <memory>
+#include <string>
 using namespace std;
 
-// Implement a class template named Queue(First - In, First - Out) that can hold elements of any type T.
-// It should expose the following public methods:
-//      enqueue(T element) (add to the back), 
-//      T dequeue() (remove and return the front element), 
-//      bool isEmpty().
-// You may use a standard library container like std::vector or std::list internally.
+// Design a class template named GenericArray that dynamically allocates an array of type T 
+// and its size is specified in the constructor. The class must include a destructor to manage 
+// memory and overload the subscript operator ([]) for element access.
 
 template<typename T>
-class CustomQueue {
+class GenericArray {
 public:
-    CustomQueue() : m_q{} {}
-    void enqueue(T element) {
-        m_q.push_back(element);
-    }
-    T dequeue() {
-        if (isEmpty()) {
-            throw std::out_of_range("No elements in queue");
+    GenericArray(size_t size) : m_t{ make_unique<T[]>(size) }, m_size{ size } {
+        for (int i{ 0 }; i < size; ++i) {
+            m_t[i] = {};
         }
-        T r{ m_q.back() };
-        m_q.pop_back();
-        return r;
     }
-    bool isEmpty() {
-        return m_q.size() == 0;
+    T& operator[](int index) {
+        return m_t[index];
     }
     void print() {
-        ostream_iterator<T> out{ cout, " " };
-        cout << "Queue contents = ";
-        ranges::copy(m_q, out);
+        ostream_iterator<T> out(cout, " ");
+        cout << "Elements: ";
+        copy(m_t.get(), m_t.get() + m_size, out);
         cout << "\n";
     }
 private:
-    vector<T> m_q{};
+    unique_ptr<T[]> m_t{};
+    size_t m_size;
 };
 
 int main() {
-    CustomQueue<int> q1{};
-    q1.enqueue(3);
-    q1.enqueue(2);
-    q1.enqueue(7);
-    q1.enqueue(1);
-    q1.print();
-    q1.dequeue();
-    q1.dequeue();
-    q1.dequeue();
-    q1.print();
-    cout << "Empty = " << q1.isEmpty() << "\n";
-    q1.dequeue();
-    cout << "Empty = " << q1.isEmpty() << "\n";
+    GenericArray<int> a1(4);
+    a1.print();
+    a1[1] = 3;
+    a1.print();
+    GenericArray<string> a2(4);
+    a2.print();
+    a2[1] = "test"s;
+    a2.print();
     return 0;
 }
