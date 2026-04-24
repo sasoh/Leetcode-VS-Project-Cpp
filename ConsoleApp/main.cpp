@@ -1,22 +1,27 @@
 ﻿#include <iostream>
 #include <format>
+#include <array>
 using namespace std;
 
-// Implement a function template named mySwap that takes two parameters by reference, and swaps their values. 
-// Demonstrate its usage with int and float variables.
+// Create a function template named printArray that takes an array 
+// of any type and an integer representing the size of the array, 
+// and then prints every element of the array on a single line, separated by spaces.
 
-template<typename T>
-void mySwap(T& a, T&b) {
-    T temp{a};
-    a = b;
-    b = temp;
+template<typename T, size_t size>
+void printArray(const T a[]) {
+    for (int i{ 0 }; i < size; ++i) {
+        cout << a[i];
+        if (i < size - 1) {
+            cout << " ";
+        }
+    }
+    cout << "\n";
 }
 
 int main() {
-    int a1 = 2;
-    int a2 = 3;
-    cout << format("a1 = {} a2 = {}\n", a1, a2);
-    mySwap(a1, a2);
-    cout << format("a1 = {} a2 = {}\n", a1, a2);
+    int a1[]{ 1, 2, 3 };
+    printArray<int, 3>(a1);
+    double a2[]{ 1.2, 2.4, 3.7 };
+    printArray<double, 3>(a2);
     return 0;
 }
