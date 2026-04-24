@@ -3,25 +3,23 @@
 #include <array>
 using namespace std;
 
-// Create a function template named printArray that takes an array 
-// of any type and an integer representing the size of the array, 
-// and then prints every element of the array on a single line, separated by spaces.
+// Write a function template named findInArray that takes an array of type T,
+// the array size, and a value of type T to search for.
+// The function should return the index of the first occurrence of the value in the array,
+// or -1 if the value is not found.
 
-template<typename T, size_t size>
-void printArray(const T a[]) {
-    for (int i{ 0 }; i < size; ++i) {
-        cout << a[i];
-        if (i < size - 1) {
-            cout << " ";
+template<typename T>
+int findInArray(const T array[], size_t size, T searched) {
+    for (int i{0}; i < size; ++i) {
+        if (array[i] == searched) {
+            return i;
         }
     }
-    cout << "\n";
+    return -1;
 }
 
 int main() {
-    int a1[]{ 1, 2, 3 };
-    printArray<int, 3>(a1);
-    double a2[]{ 1.2, 2.4, 3.7 };
-    printArray<double, 3>(a2);
+    int a1[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    cout << findInArray<int>(a1, 9, 1) << "\n";
     return 0;
 }
