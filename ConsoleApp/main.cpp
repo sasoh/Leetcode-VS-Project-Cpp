@@ -1,27 +1,63 @@
 ﻿#include <format>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <iterator>
+#include <ranges>
+#include <algorithm>
 using namespace std;
 
-// Create a class template named Pair that can hold two values of potentially different types, T1 and T2.
-// Include a public constructor that takes arguments for these two values and initializes them. Finally,
-// include public member functions getFirst() and getSecond() to retrieve the stored values.
+// Implement a class template named Stack that uses a std::vector internally to store elements of any type T.
+// The stack must support the following public operations:
+//      push(T element), 
+//      T pop() (which removes and returns the top element), 
+//      bool isEmpty() (to check if the stack is empty).
 
-template<typename T1, typename T2>
-class Pair {
+template<typename T>
+class CustomStack {
 public:
-    Pair(const T1 t1, const T2& t2) : m_t1{ t1 }, m_t2{ t2 } {}
-    T1 getFirst() { return m_t1; }
-    T2 getSecond() { return m_t2; }
+    CustomStack() : m_v{} {}
+    void push(T element) {
+        m_v.push_back(element);
+    }
+    T pop() {
+        auto r = m_v.back();
+        m_v.pop_back();
+        return r;
+    }
+    bool isEmpty() {
+        return m_v.size() == 0;
+    }
+    void printStack() {
+        ostream_iterator<T> out{ cout, " " };
+        cout << "Stack contents: ";
+        ranges::copy(m_v, out);
+        cout << "\n";
+    }
 private:
-    T1 m_t1{};
-    T2 m_t2{};
+    vector<T> m_v{};
 };
 
 int main() {
-    Pair p1(2, "test"s);
-    cout << format("Pair: {}, {}\n", p1.getFirst(), p1.getSecond());
-    Pair p2("bbrr", 4.2); 
-    cout << format("Pair: {}, {}\n", p2.getFirst(), p2.getSecond());
+    CustomStack<int> intStack{};
+    intStack.push(3);
+    intStack.push(2);
+    intStack.push(6);
+    intStack.push(78);
+    intStack.printStack();
+    intStack.pop();
+    intStack.pop();
+    intStack.printStack();
+    intStack.pop();
+    cout << "Empty = " << intStack.isEmpty() << "\n";
+    intStack.printStack();
+    intStack.pop();
+    cout << "Empty = " << intStack.isEmpty() << "\n";
+
+    CustomStack<std::string> stringStack{};
+    stringStack.push("test 1"s);
+    stringStack.push("test 2"s);
+    stringStack.push("test 3"s);
+    stringStack.printStack();
     return 0;
 }
