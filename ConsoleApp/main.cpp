@@ -2,23 +2,23 @@
 #include <format>
 #include <array>
 #include <type_traits>
+#include <format>
 using namespace std;
 
-// Implement a function template named sum that takes an array 
-// of any numeric type(int, float, double) and its size, 
-// and returns the sum of all its elements.
-
-template<typename T> requires std::is_arithmetic_v<T>
-T sum(const T arr[], size_t size) {
-    T sum{};
-    for (int i{0}; i < size; ++i) {
-        sum += arr[i];
-    }
-    return sum;
+// Create a function template named compareAndPrint that 
+// takes two parameters of potentially different types, T1 and T2.
+// The function should explicitly convert both parameters to a common type (e.g., double)
+// for comparison and then print which original value was larger.
+template<typename T1, typename T2> requires std::is_arithmetic_v<T1> && std::is_arithmetic_v<T2>
+void compareAndPrint(const T1& a, const T2& b) {
+    auto ad = static_cast<double>(a);
+    auto bd = static_cast<double>(b);
+    cout << format("Comparing {} ({}) and {} ({}): {} is greater.\n", a, ad, b, bd, ad >= bd ? a : b);
 }
 
 int main() {
-    int a1[]{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-    cout << "Sum = " << sum(a1, 9) << "\n";
+    compareAndPrint(10, 9.9);
+    compareAndPrint('A', 60);
+    compareAndPrint(100.5, 100.49);
     return 0;
 }
