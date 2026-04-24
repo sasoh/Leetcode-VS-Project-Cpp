@@ -1,18 +1,27 @@
 ﻿#include <iostream>
 using namespace std;
 
-// Create a function template named powerOfTwo that calculates 2^N where N is the input value of a generic type T. 
-// In a separate section of your code (or a separate file, conceptually), 
-// provide an explicit instantiation of this function template for the float type.
+// Create a generic function template named process that 
+// takes one parameter of type T and prints a message 
+// indicating it’s the generic version. Then, create a regular,
+// non-template overload of the same function that takes a 
+// single int parameter and prints a message indicating it’s
+// the specialized int version. Observe which function the 
+// compiler chooses when called with an int and a double.
 
 template<typename T>
-T powerOfTwo(const T& v) {
-    return v * v;
+void genericFunction(const T t) {
+    cout << "generic variant\n";
+}
+
+template<>
+void genericFunction(const int t) {
+    cout << "int variant\n";
 }
 
 int main() {
-    cout << powerOfTwo(4) << "\n";
-    cout << powerOfTwo(4.2) << "\n";
-    cout << powerOfTwo<float>(4.2f) << "\n";
+    genericFunction(1);
+    genericFunction(1.2);
+    genericFunction("gr");
     return 0;
 }
