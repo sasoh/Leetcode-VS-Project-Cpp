@@ -1,27 +1,27 @@
-﻿#include <iostream>
+﻿#include <format>
+#include <iostream>
+#include <string>
 using namespace std;
 
-// Create a generic function template named process that 
-// takes one parameter of type T and prints a message 
-// indicating it’s the generic version. Then, create a regular,
-// non-template overload of the same function that takes a 
-// single int parameter and prints a message indicating it’s
-// the specialized int version. Observe which function the 
-// compiler chooses when called with an int and a double.
+// Create a class template named Pair that can hold two values of potentially different types, T1 and T2.
+// Include a public constructor that takes arguments for these two values and initializes them. Finally,
+// include public member functions getFirst() and getSecond() to retrieve the stored values.
 
-template<typename T>
-void genericFunction(const T t) {
-    cout << t << " " << typeid(T).name() << " generic variant\n";
-}
-
-void genericFunction(const int t) {
-    cout << t << " int variant\n";
-}
+template<typename T1, typename T2>
+class Pair {
+public:
+    Pair(const T1 t1, const T2& t2) : m_t1{ t1 }, m_t2{ t2 } {}
+    T1 getFirst() { return m_t1; }
+    T2 getSecond() { return m_t2; }
+private:
+    T1 m_t1{};
+    T2 m_t2{};
+};
 
 int main() {
-    genericFunction(1);
-    genericFunction<int>(1);
-    genericFunction(1.2);
-    genericFunction("gr");
+    Pair p1(2, "test"s);
+    cout << format("Pair: {}, {}\n", p1.getFirst(), p1.getSecond());
+    Pair p2("bbrr", 4.2); 
+    cout << format("Pair: {}, {}\n", p2.getFirst(), p2.getSecond());
     return 0;
 }
