@@ -11,16 +11,16 @@ using namespace std;
 
 template<typename T>
 void genericFunction(const T t) {
-    cout << "generic variant\n";
+    cout << t << " " << typeid(T).name() << " generic variant\n";
 }
 
-template<>
 void genericFunction(const int t) {
-    cout << "int variant\n";
+    cout << t << " int variant\n";
 }
 
 int main() {
     genericFunction(1);
+    genericFunction<int>(1);
     genericFunction(1.2);
     genericFunction("gr");
     return 0;
