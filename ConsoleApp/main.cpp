@@ -1,37 +1,27 @@
 ﻿#include <memory>
-#include <iostream>
-#include <iterator>
-#include <algorithm>
 using namespace std;
 
-// Create a class template named FixedSizeArray that takes both a type parameter T 
-// and an integer non - type parameter N for the size of the array.
-// The array should be a private standard C - style array of size N.
-// Include a member function T get(int index) to access elements.
+// Define a class template for a Node in a singly linked list.
+// The node must hold a value of generic type T and a pointer to the next node(which must be a pointer to a Node<T>).
+// Include a constructor to initialize the value.
 
-template<typename T, int N>
-class FixedSizeArray {
+template<typename T>
+class Node {
 public:
-    FixedSizeArray() : m_ptr{ make_unique<T[]>(N) }, m_size{ N } {}
-    T& get(int index) {
-        return m_ptr[index];
-    }
-    void print() const {
-        ostream_iterator<int> out{ cout, " " };
-        cout << "Array contents: ";
-        ranges::copy(m_ptr.get(), m_ptr.get() + m_size, out);
-        cout << "\n";
+    Node(T value) : m_value{ value }, m_next{ nullptr } {}
+    void setNext(Node<T>& next) {
+        m_next = make_shared<Node<T>>(next);
     }
 private:
-    unique_ptr<T[]> m_ptr{ nullptr };
-    int m_size{};
+    T m_value{};
+    shared_ptr<Node<T>> m_next{ nullptr };
 };
 
 int main() {
-    FixedSizeArray<int, 4> a1{};
-    a1.print();
-    a1.get(1) = 5;
-    a1.get(3) = 7;
-    a1.print();
+    Node<int> n1(2);
+    Node<int> n2(3);
+    Node<int> n3(4);
+    n2.setNext(n1);
+    n3.setNext(n2);
     return 0;
 }
