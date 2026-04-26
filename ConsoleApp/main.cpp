@@ -1,44 +1,37 @@
-﻿#include <iterator>
+﻿#include <memory>
 #include <iostream>
-#include <memory>
-#include <string>
-#include <format>
+#include <iterator>
+#include <algorithm>
 using namespace std;
 
-// Create a class template named Calculator with two private member variables, num1 and num2, both of type T. 
-// Include a constructor to initialize these members. 
-// The class must provide public member functions for arithmetic operations: 
-//      add(), 
-//      subtract(), 
-//      multiply(), 
-//      divide(),
-// all returning a value of type T.
+// Create a class template named FixedSizeArray that takes both a type parameter T 
+// and an integer non - type parameter N for the size of the array.
+// The array should be a private standard C - style array of size N.
+// Include a member function T get(int index) to access elements.
 
-template<typename T>
-class Calculator {
+template<typename T, int N>
+class FixedSizeArray {
 public:
-    Calculator(const T num1, const T num2) : m_num1{ num1 }, m_num2{ num2 } {}
-    T add() {
-        return m_num1 + m_num2;
+    FixedSizeArray() : m_ptr{ make_unique<T[]>(N) }, m_size{ N } {}
+    T& get(int index) {
+        return m_ptr[index];
     }
-    T subtract() {
-        return m_num1 - m_num2;
-    }
-    T multiply() {
-        return m_num1 * m_num2;
-    }
-    T divide() {
-        return m_num1 / m_num2;
+    void print() const {
+        ostream_iterator<int> out{ cout, " " };
+        cout << "Array contents: ";
+        ranges::copy(m_ptr.get(), m_ptr.get() + m_size, out);
+        cout << "\n";
     }
 private:
-    T m_num1;
-    T m_num2;
+    unique_ptr<T[]> m_ptr{ nullptr };
+    int m_size{};
 };
 
 int main() {
-    Calculator c1(3, 5);
-    cout << format("{}, {}, {}, {}\n", c1.add(), c1.subtract(), c1.multiply(), c1.divide());
-    Calculator c2(7.5, 2.0);
-    cout << format("{}, {}, {}, {}\n", c2.add(), c2.subtract(), c2.multiply(), c2.divide());
+    FixedSizeArray<int, 4> a1{};
+    a1.print();
+    a1.get(1) = 5;
+    a1.get(3) = 7;
+    a1.print();
     return 0;
 }
