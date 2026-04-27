@@ -1,27 +1,33 @@
 ﻿#include <memory>
 #include <iostream>
+#include <string>
 using namespace std;
 
-// Create a class template named HoldingCell with two type parameters, T1 and T2. 
-// Set the second type parameter, T2, to have a default type argument of int. 
-// The class should hold two private members of types T1 and T2 and a constructor to initialize them.
+// Create a generic class template named Printer that has one type parameter T 
+// and a single member function print(T value) that prints the value.
+// Then, provide a full template specialization of the Printer class 
+// specifically for the type char* (C - style string) 
+// The specialized version’s print() function should display the string contents enclosed in double quotes.
 
-template<typename T1, typename T2 = int>
-class HoldingCell {
-public:
-    HoldingCell(const T1 t1, const T2 t2) : m_t1{ t1 }, m_t2{ t2 } {}
-    void print() {
-        cout << m_t1 << " " << m_t2 << "\n";
-    }
-private:
-    T1 m_t1{};
-    T2 m_t2{};
-};
+template<typename T>
+void print(T value) {
+    cout << "Value: " << value << "\n";
+}
+
+template<>
+void print(char* value) {
+    cout << "Value: \"" << value << "\"\n";
+}
+
+template<>
+void print(const char* value) {
+    cout << "Value: \"" << value << "\"\n";
+}
 
 int main() {
-    HoldingCell h1(2, 1);
-    h1.print();
-    HoldingCell h2(2.1, 3.6);
-    h2.print();
+    print(3);
+    print(5.24);
+    print("something");
+    print("something else"s);
     return 0;
 }
