@@ -1,47 +1,24 @@
-﻿#include <memory>
-#include <iostream>
-#include <string>
+﻿#include <iostream>
 using namespace std;
 
-// Create a generic class template named Printer that has one type parameter T 
-// and a single member function print(T value) that prints the value.
-// Then, provide a full template specialization of the Printer class 
-// specifically for the type char* (C - style string) 
-// The specialized version’s print() function should display the string contents enclosed in double quotes.
+// Create a generic function template named printValue that takes a parameter of type T and prints its value.
+// Then, provide an explicit template specialization of this function specifically for the type bool.
+// The specialized version should print the strings “True” or “False” instead of the numeric values 1 or 0.
 
 template<typename T>
-class Printer {
-public:
-    void print(T value) {
-        cout << "Value: " << value << "\n";
-    }
-};
+void printValue(T value) {
+    cout << value << "\n";
+}
 
 template<>
-class Printer<char *> {
-public:
-    void print(char* value) {
-        cout << "Value (c): \"" << value << "\"\n";
-    }
-};
-
-template<>
-class Printer<const char*> {
-public:
-    void print(const char* value) {
-        cout << "Value (cc): \"" << value << "\"\n";
-    }
-};
+void printValue<bool>(bool value) {
+    cout << (value == true ? "True" : "False") << "\n";
+}
 
 int main() {
-    Printer<int> pi{};
-    pi.print(3);
-    Printer<double> pd{};
-    pd.print(7.2);
-    Printer<char*> pc{};
-    char chars[] = "something";
-    pc.print(chars);
-    Printer<const char*> pcc{};
-    pcc.print("something else");
+    printValue(4);
+    printValue(-25.2);
+    printValue(false);
+    printValue(true);
     return 0;
 }
