@@ -10,24 +10,38 @@ using namespace std;
 // The specialized version’s print() function should display the string contents enclosed in double quotes.
 
 template<typename T>
-void print(T value) {
-    cout << "Value: " << value << "\n";
-}
+class Printer {
+public:
+    void print(T value) {
+        cout << "Value: " << value << "\n";
+    }
+};
 
 template<>
-void print(char* value) {
-    cout << "Value: \"" << value << "\"\n";
-}
+class Printer<char *> {
+public:
+    void print(char* value) {
+        cout << "Value (c): \"" << value << "\"\n";
+    }
+};
 
 template<>
-void print(const char* value) {
-    cout << "Value: \"" << value << "\"\n";
-}
+class Printer<const char*> {
+public:
+    void print(const char* value) {
+        cout << "Value (cc): \"" << value << "\"\n";
+    }
+};
 
 int main() {
-    print(3);
-    print(5.24);
-    print("something");
-    print("something else"s);
+    Printer<int> pi{};
+    pi.print(3);
+    Printer<double> pd{};
+    pd.print(7.2);
+    Printer<char*> pc{};
+    char chars[] = "something";
+    pc.print(chars);
+    Printer<const char*> pcc{};
+    pcc.print("something else");
     return 0;
 }
