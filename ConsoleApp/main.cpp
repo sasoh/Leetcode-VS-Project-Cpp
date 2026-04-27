@@ -1,24 +1,22 @@
 ﻿#include <iostream>
 using namespace std;
 
-// Create a generic function template named printValue that takes a parameter of type T and prints its value.
-// Then, provide an explicit template specialization of this function specifically for the type bool.
-// The specialized version should print the strings “True” or “False” instead of the numeric values 1 or 0.
+// (C++11 + ) Write a variadic function template called print_all that can accept zero or more arguments of any type and print them all,
+// separated by spaces.
+// You must use a base case and a recursive case to unpack the parameter pack.
 
-template<typename T>
-void printValue(T value) {
-    cout << value << "\n";
+void print_all() {
+    cout << "\n";
 }
 
-template<>
-void printValue<bool>(bool value) {
-    cout << (value == true ? "True" : "False") << "\n";
+template<typename T, typename... Rs>
+void print_all(T first, Rs... rest) {
+    cout << first << " ";
+    print_all(rest...);
 }
 
 int main() {
-    printValue(4);
-    printValue(-25.2);
-    printValue(false);
-    printValue(true);
+    print_all(3, 6, 2);
+    print_all(-3.22, 4, "something");
     return 0;
 }
