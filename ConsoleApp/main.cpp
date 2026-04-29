@@ -7,12 +7,11 @@ using namespace std;
 
 using Link = pair<int, int>;
 
-static list<Link> linksToNeighbors(const vector<Link>& nodes, const set<Link>& removedNodes, int node) {
+static list<Link> linksToNeighbors(const vector<Link>& nodes, int node) {
     list<Link> neighbors{};
 
     for (int i{ 0 }; i < nodes.size(); ++i) {
         auto n = nodes[i];
-        if (removedNodes.contains(n)) continue;
         if (n.first == node || n.second == node) {
             neighbors.push_back(n);
         }
@@ -21,8 +20,8 @@ static list<Link> linksToNeighbors(const vector<Link>& nodes, const set<Link>& r
     return neighbors;
 }
 
-static Link bfsCut(const vector<Link>& nodes, const set<int>& exitNodes, const set<Link>& removedLinks, int start) {
-    auto neighbors{ linksToNeighbors(nodes, removedLinks, start) };
+static Link bfsCut(vector<Link>& nodes, const set<int>& exitNodes, int start) {
+    auto neighbors{ linksToNeighbors(nodes, start) };
     set<Link> visited{};
 
     while (neighbors.size() > 0) {
@@ -31,10 +30,14 @@ static Link bfsCut(const vector<Link>& nodes, const set<int>& exitNodes, const s
         visited.insert(next);
 
         if (exitNodes.contains(next.first) || exitNodes.contains(next.second)) {
+            auto i = std::find_if(nodes.begin(), nodes.end(), [next](Link l){
+                return next == l;
+            });
+            nodes.erase(i);
             return next;
         }
 
-        auto nextNeighbors = linksToNeighbors(nodes, removedLinks, next.second);
+        auto nextNeighbors = linksToNeighbors(nodes, next.second);
         for (const auto& n : nextNeighbors) {
             if (!visited.contains(n)) {
                 neighbors.push_back(n);
@@ -60,8 +63,7 @@ int main()
     while (1) {
         int si; // The index of the node on which the Bobnet agent is positioned this turn
         cin >> si; cin.ignore();
-        auto toCut = bfsCut(links, exitNodes, removedLinks, si);
+        auto toCut = bfsCut(links, exitNodes, si);
         cout << toCut.first << " " << toCut.second << endl;
-        removedLinks.insert(toCut);
     }
 }
