@@ -1,69 +1,65 @@
 ﻿#include <iostream>
+#include <string>
 #include <vector>
-#include <utility>
-#include <list>
-#include <set>
+#include <algorithm>
+#include <map>
 using namespace std;
 
-using Link = pair<int, int>;
-
-static list<Link> linksToNeighbors(const vector<Link>& nodes, int node) {
-    list<Link> neighbors{};
-
-    for (int i{ 0 }; i < nodes.size(); ++i) {
-        auto n = nodes[i];
-        if (n.first == node || n.second == node) {
-            neighbors.push_back(n);
-        }
-    }
-
-    return neighbors;
-}
-
-static Link bfsCut(vector<Link>& nodes, const set<int>& exitNodes, int start) {
-    auto neighbors{ linksToNeighbors(nodes, start) };
-    set<Link> visited{};
-
-    while (neighbors.size() > 0) {
-        auto next = neighbors.front();
-        neighbors.pop_front();
-        visited.insert(next);
-
-        if (exitNodes.contains(next.first) || exitNodes.contains(next.second)) {
-            auto i = std::find_if(nodes.begin(), nodes.end(), [next](Link l){
-                return next == l;
-            });
-            nodes.erase(i);
-            return next;
-        }
-
-        auto nextNeighbors = linksToNeighbors(nodes, next.second);
-        for (const auto& n : nextNeighbors) {
-            if (!visited.contains(n)) {
-                neighbors.push_back(n);
-            }
-        }
-    }
-
-    return {};
-}
+//  Input
+//  Line 1: the width L of a letter represented in ASCII art.All letters are the same width.
+//  Line 2 : the height H of a letter represented in ASCII art.All letters are the same height.
+//  Line 3 : The line of text T, composed of N ASCII characters.
+//
+//  Following lines : the string of characters ABCDEFGHIJKLMNOPQRSTUVWXYZ? Represented in ASCII art.
+//
+//  Output
+//  The text T in ASCII art.
+//  The characters a to z are shown in ASCII art by their equivalent in upper case.
+//  The characters that are not in the intervals [a - z] or [A - Z] will be shown as a question mark in ASCII art.
+//
+//  Constraints
+//  0 < L < 30
+//  0 < H < 30
+//  0 < N < 200
 
 int main()
 {
-    int n = 3;
-    int l = 2;
-    int e = 1;
-    vector<Link> links{
-        {0, 1},
-        {1, 2},
-    };
-    set<int> exitNodes{ 1 };
+    int l{ 4 };
+    int h{ 5 };
+    string t{ "exp@" };
 
-    set<Link> removedLinks{};
-    while (1) {
-        int si; // The index of the node on which the Bobnet agent is positioned this turn
-        cin >> si; cin.ignore();
-        auto toCut = bfsCut(links, exitNodes, si);
-        cout << toCut.first << " " << toCut.second << endl;
+    vector<string> asciiLetters{
+        " #  ##   ## ##  ### ###  ## # # ###  ## # # #   # # ###  #  ##   #  ##   ## ### # # # # # # # # # # ### ### "s,
+        "# # # # #   # # #   #   #   # #  #    # # # #   ### # # # # # # # # # # #    #  # # # # # # # # # #   #   # "s,
+        "### ##  #   # # ##  ##  # # ###  #    # ##  #   ### # # # # ##  # # ##   #   #  # # # # ###  #   #   #   ## "s,
+        "# # # # #   # # #   #   # # # #  #  # # # # #   # # # # # # #    ## # #   #  #  # # # # ### # #  #  #       "s,
+        "# # ##   ## ##  ### #    ## # # ###  #  # # ### # # # #  #  #     # # # ##   #  ###  #  # # # #  #  ###  #  "s
+    };
+
+    using Letter = vector<string>;
+    string possibleCharacters{ "ABCDEFGHIJKLMNOPQRSTUVWXYZ?" };
+    map<char, Letter> letters{};
+    for (int i{ 0 }; i < possibleCharacters.size(); ++i) {
+        Letter currentLetter(h, {});
+        int offsetH{ i * l };
+        for (int m{ 0 }; m < h; ++m) {
+            for (int n{ 0 }; n < l; ++n) {
+                currentLetter[m].push_back(asciiLetters[m][n + offsetH]);
+            }
+        }
+        letters.insert({ toupper(possibleCharacters[i]), currentLetter });
+    }
+
+    for (int i{ 0 }; i < h; ++i) {
+        string line{};
+        for (int j{ 0 }; j < t.size(); ++j) {
+            auto character = toupper(t[j]);
+            if (possibleCharacters.find(character) == string::npos) {
+                character = '?';
+            }
+            auto letter = letters[character];
+            line.append(letter[i]);
+        }
+        cout << line << endl;
     }
 }
