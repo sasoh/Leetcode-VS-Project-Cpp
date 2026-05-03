@@ -1,38 +1,33 @@
-﻿#include <iostream>
-#include <string>
-#include <ranges>
-#include <vector>
-#include <unordered_set>
-#include <array>
-#include <format>
-#include <concepts>
+﻿//  15.25 (Computing Values at Compile - Time with Metaprogramming) Using the techniques in Section 15.13.2,
+//  create a template metafunction, a constexpr recursive function and a constexpr iterative function to 
+//  calculate the sum of the squares of the int values from 1 through the argument value.
 
-//15.15 (Function Template) Create a sumRange function template that receives a range of
-//values, sums them and returns the result.Use a range - based for statement and the += op -
-//erator to perform your calculations.Test your code with a container of ints, a container
-//of doubles and a container of strings.
+#include <iostream>
+using namespace std;
 
-template<typename T>
-concept SumRangeParam = std::floating_point<T> || std::integral<T>;
+template<int T>
+class SumOfSquares {
+public:
+    static constexpr int value{ T * T + SumOfSquares<T - 1>::value };
+};
 
-template<SumRangeParam T, std::ranges::input_range S>
-    requires requires (T sum, std::ranges::range_value_t<S> v) {
-    sum += v;
-}
-T sumRange(const S& range) {
-    T sum{};
-    for (const auto& v : range) {
-        sum += v;
+template<>
+class SumOfSquares<0> {
+public:
+    static constexpr int value{ 0 };
+};
+
+static constexpr int SumOfSquaresFunction(int value) {
+    int result = 0;
+    for (size_t i{ 0 }; i <= value; ++i) {
+        result += i * i;
     }
-    return sum;
+    return result;
 }
 
 int main() {
-    std::array<int, 5> a1{ 1, 2, 3, 4, 5 };
-    std::cout << std::format("Sum of a1 = {}\n", sumRange<int>(a1));
-    std::vector<double> v2{ 1.0, 2.1, 3.2, 4.3 };
-    std::cout << std::format("Sum of v2 = {}\n", sumRange<double>(v2));
-    //std::unordered_set<std::string> v3{ "ab", "cd", "ef" };
-    //std::cout << std::format("Sum of v3 = {}\n", sumRange<std::string>(v3)); // now invalid since not float/int
+    constexpr int value = 3;
+    cout << SumOfSquares<value>::value << endl;
+    cout << SumOfSquaresFunction(value) << endl;
     return 0;
 }
