@@ -1,50 +1,51 @@
 ﻿//Given a number n, determine what the nth prime is.
 
-#include <iostream>
-#include <string>
+#include <utility>
 #include <stdexcept>
 #include <cmath>
-#include <limits>
-#include <format>
 using namespace std;
 
-namespace nth_prime {
-    bool isPrime(int n) {
-        //std::cout << format("Checking if {} is prime\n", n);
-        int limit = static_cast<int>(std::sqrt(n));
-        for (size_t i{ 2 }; i <= limit; ++i) {
-            // should not divide by any number
-            //std::cout << format("Is {} a divisor? {}\n", i, n % i == 0);
-            if (n % i == 0) return false;
-        }
-        return true;
-    }
+namespace queen_attack {
+    using Coordinates = std::pair<int, int>;
 
-    int nth(int n) {
-        if (n < 1) {
-            throw std::domain_error("N >= 1");
-        }
-
-        int primeCount{};
-        constexpr auto maxIterations = std::numeric_limits<int>::max();
-        for (size_t i{ 2 }; i <= maxIterations; ++i) {
-            if (!isPrime(i)) continue;
-            primeCount++;
-            if (primeCount == n) {
-                return i;
+    class chess_board {
+    public:
+        chess_board(const Coordinates& w, const Coordinates& b) : m_white(w), m_black(b) {
+            if (w.first < 0 || w.first > 7 || w.second < 0 || w.second > 7 ||
+                b.first < 0 || b.first > 7 || b.second < 0 || b.second > 7 ||
+                ((w.first == b.first) && (w.second == b.second))) {
+                throw std::domain_error("Invalid coordinates");
             }
         }
+        const Coordinates white() const {
+            return m_white;
+        }
+        const Coordinates black() const {
+            return m_black;
+        }
+        bool can_attack() const {
+            if (m_white.first == m_black.first || m_white.second == m_black.second) {
+                return true;
+            }
+            if (std::abs(m_white.first - m_black.first) == std::abs(m_white.second - m_black.second)) {
+                return true;
+            }
 
-        return 1;
-    }
-}  // namespace nth_prime
+            return false;
+        }
+    private:
+        Coordinates m_white{};
+        Coordinates m_black{};
+    };
+
+    //const auto white = std::make_pair(2, 2);
+    //const auto black = std::make_pair(0, 3);
+    //const queen_attack::chess_board board{ white, black };
+    //REQUIRE(white == board.white());
+    //REQUIRE(black == board.black());
+}  // namespace queen_attack
+
 
 int main() {
-    std::cout << std::format("prime {}\n", nth_prime::nth(1));
-    std::cout << std::format("prime {}\n", nth_prime::nth(2));
-    std::cout << std::format("prime {}\n", nth_prime::nth(3));
-    std::cout << std::format("prime {}\n", nth_prime::nth(4));
-    std::cout << std::format("prime {}\n", nth_prime::nth(5));
-    std::cout << std::format("prime {}\n", nth_prime::nth(6));
     return 0;
 }
