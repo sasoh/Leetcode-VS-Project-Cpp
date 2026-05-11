@@ -1,35 +1,23 @@
-﻿//The rules were deceptively simple. Pick any positive integer.
-//If it's even, divide it by 2.
-//If it's odd, multiply it by 3 and add 1.
-//Then, repeat these steps with the result, continuing indefinitely.
+﻿//  Find the difference between the square of the sum and the sum of the squares of the first N natural numbers.
 
 #include <iostream>
 #include <string>
 #include <stdexcept>
 using namespace std;
 
-namespace collatz_conjecture {
-    int steps(int start) {
-        if (start < 1) {
-            throw std::domain_error("Number must be more than 1");
-        }
-        if (start == 1) {
-            return 0;
-        }
-        if (start % 2 == 0) {
-            return 1 + steps(start / 2);
-        }
-        else {
-            return 1 + steps(3 * start + 1);
-        }
+namespace difference_of_squares {
+    int square_of_sum(int n) {
+        auto sum = n * (n + 1) / 2;
+        return sum * sum;
     }
-}  // namespace collatz_conjecture
-
+    int sum_of_squares(int n) {
+        return n * (n + 1) * (2 * n + 1) / 6;
+    }
+    int difference(int n) {
+        return square_of_sum(n) - sum_of_squares(n);
+    }
+}  // namespace difference_of_squares
 
 int main() {
-    auto a = collatz_conjecture::steps(16);
-    auto b = collatz_conjecture::steps(12);
-    auto c = collatz_conjecture::steps(100000);
-    auto d = collatz_conjecture::steps(0);
     return 0;
 }
