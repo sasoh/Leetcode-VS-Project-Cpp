@@ -37,12 +37,6 @@ namespace queen_attack {
         Coordinates m_white{};
         Coordinates m_black{};
     };
-
-    //const auto white = std::make_pair(2, 2);
-    //const auto black = std::make_pair(0, 3);
-    //const queen_attack::chess_board board{ white, black };
-    //REQUIRE(white == board.white());
-    //REQUIRE(black == board.black());
 }  // namespace queen_attack
 
 
