@@ -1,45 +1,34 @@
-﻿//Given a number n, determine what the nth prime is.
+﻿// Sieve of Eratosthenes
+// Write out all the numbers from 2 up to and including your given number.Then, follow these steps:
+//   Find the next unmarked number (skipping over marked numbers). This is a prime number.
+//   Mark all the multiples of that prime number as not prime.
+// Repeat the steps until you've gone through every number. At the end, all the unmarked numbers are prime.
 
-#include <utility>
-#include <stdexcept>
-#include <cmath>
+#include <iostream>
+#include <vector>
+#include <set>
 using namespace std;
 
-namespace queen_attack {
-    using Coordinates = std::pair<int, int>;
-
-    class chess_board {
-    public:
-        chess_board(const Coordinates& w, const Coordinates& b) : m_white(w), m_black(b) {
-            if (w.first < 0 || w.first > 7 || w.second < 0 || w.second > 7 ||
-                b.first < 0 || b.first > 7 || b.second < 0 || b.second > 7 ||
-                ((w.first == b.first) && (w.second == b.second))) {
-                throw std::domain_error("Invalid coordinates");
+namespace sieve {
+    auto primes(int n) {
+        std::vector<int> r{};
+        if (n < 2) return r;
+        std::set<int> excluded{};
+        for (int i{2}; i <= n; ++i) {
+            if (excluded.find(i) != excluded.end()) continue;
+            r.push_back(i);
+            for (int j{1}; j <= n; j += 1) {
+                excluded.insert(i * j);
             }
         }
-        const Coordinates white() const {
-            return m_white;
-        }
-        const Coordinates black() const {
-            return m_black;
-        }
-        bool can_attack() const {
-            if (m_white.first == m_black.first || m_white.second == m_black.second) {
-                return true;
-            }
-            if (std::abs(m_white.first - m_black.first) == std::abs(m_white.second - m_black.second)) {
-                return true;
-            }
 
-            return false;
-        }
-    private:
-        Coordinates m_white{};
-        Coordinates m_black{};
-    };
-}  // namespace queen_attack
-
+        return r;
+    }
+}  // namespace sieve
 
 int main() {
+    const std::vector<int> expected{ 2, 3, 5, 7 };
+    const std::vector<int> actual = sieve::primes(10);
+    std::cout << (expected == actual) << std::endl;
     return 0;
 }
