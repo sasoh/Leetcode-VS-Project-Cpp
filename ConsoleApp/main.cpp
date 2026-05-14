@@ -15,39 +15,19 @@ using namespace std;
 
 
 namespace say {
+    static const std::map<int, std::string> dtw{
+        {1, "one"s}, {2, "two"s}, {3, "three"s}, {4, "four"s}, {5, "five"s},
+        {6, "six"s}, {7, "seven"s}, {8, "eight"s}, {9, "nine"s},
+        {10, "ten"s}, {11, "eleven"s}, {12, "twelve"s}, {13, "thirteen"s}, {14, "fourteen"s},
+        {15, "fifteen"s}, {16, "sixteen"s}, {17, "seventeen"s}, {18, "eighteen"s}, {19, "nineteen"s},
+        {20, "twenty"s}, {30, "thirty"s}, {40, "forty"s}, {50, "fifty"s}, {60, "sixty"s},
+        {70, "seventy"s}, {80, "eighty"s}, {90, "ninety"s},
+    };
+
+
     std::string digitToWord(int d) {
         std::string r{};
         if (d == 0) return r;
-
-        static const std::map<int, std::string> dtw{
-            {1, "one"s},
-            {2, "two"s},
-            {3, "three"s},
-            {4, "four"s},
-            {5, "five"s},
-            {6, "six"s},
-            {7, "seven"s},
-            {8, "eight"s},
-            {9, "nine"s},
-            {10, "ten"s},
-            {11, "eleven"s},
-            {12, "twelve"s},
-            {13, "thirteen"s},
-            {14, "fourteen"s},
-            {15, "fifteen"s},
-            {16, "sixteen"s},
-            {17, "seventeen"s},
-            {18, "eighteen"s},
-            {19, "nineteen"s},
-            {20, "twenty"s},
-            {30, "thirty"s},
-            {40, "forty"s},
-            {50, "fifty"s},
-            {60, "sixty"s},
-            {70, "seventy"s},
-            {80, "eighty"s},
-            {90, "ninety"s},
-        };
 
         // hundreds
         int hundreds = d / 100;
@@ -94,37 +74,51 @@ namespace say {
             return "zero"s;
         }
 
-        std::string r{};        
-        int billions = (n / 1'000'000'000) % 1000;
-        if (billions > 0) {
-            auto words = digitToWord(billions);
-            r += words + " billion";
-        }
-        int millions = (n / 1'000'000) % 1000;
-        if (millions > 0) {
-            auto words = digitToWord(millions);
+        std::string r{};
+        auto p = {
+            std::make_pair((n / 1'000'000'000) % 1000, " billion"),
+            std::make_pair((n / 1'000'000) % 1000, " million"),
+            std::make_pair((n / 1000) % 1000, " thousand"),
+            std::make_pair(n % 1000, ""),
+        };
+        for (const auto& [v, suffix] : p) {
+            if (v < 1) continue;
+            auto words = digitToWord(v);
             if (r.size() > 0) {
                 r.append(" "s);
             }
-            r += words + " million";
-        }
+            r += words + suffix;
+        } 
 
-        int thousands = (n / 1000) % 1000;
-        if (thousands > 0) {
-            auto words = digitToWord(thousands);
-            if (r.size() > 0) {
-                r.append(" "s);
-            }
-            r += words + " thousand";
-        }
-        int hundreds = n % 1000;
-        if (hundreds > 0) {
-            auto words = digitToWord(hundreds);
-            if (r.size() > 0) {
-                r.append(" "s);
-            }
-            r += words;
-        }
+        //int billions = (n / 1'000'000'000) % 1000;
+        //if (billions > 0) {
+        //    auto words = digitToWord(billions);
+        //    r += words + " billion";
+        //}
+        //int millions = (n / 1'000'000) % 1000;
+        //if (millions > 0) {
+        //    auto words = digitToWord(millions);
+        //    if (r.size() > 0) {
+        //        r.append(" "s);
+        //    }
+        //    r += words + " million";
+        //}
+        //int thousands = (n / 1000) % 1000;
+        //if (thousands > 0) {
+        //    auto words = digitToWord(thousands);
+        //    if (r.size() > 0) {
+        //        r.append(" "s);
+        //    }
+        //    r += words + " thousand";
+        //}
+        //int hundreds = n % 1000;
+        //if (hundreds > 0) {
+        //    auto words = digitToWord(hundreds);
+        //    if (r.size() > 0) {
+        //        r.append(" "s);
+        //    }
+        //    r += words;
+        //}
         return r;
     }
 }  // namespace say
