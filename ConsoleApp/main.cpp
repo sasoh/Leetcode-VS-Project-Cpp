@@ -1,46 +1,23 @@
-﻿//  00001 = wink
-//  00010 = double blink
-//  00100 = close your eyes
-//  01000 = jump
-//  10000 = Reverse the order of the operations in the secret handshake.
+﻿//  Your task is to determine the date and time one gigasecond after a certain date.
+//  A gigasecond is one thousand million seconds. That is a one with nine zeros after it.
+//  If you were born on January 24th, 2015 at 22:00 (10:00 : 00pm), then you would be 
+//  a gigasecond old on October 2nd, 2046 at 23 : 46 : 40 (11:46 : 40pm).
 
-#include <iostream>
-#include <format>
-#include <string>
-#include <vector>
-#include <bitset>
-#include <algorithm>
+#include <boost/date_time/posix_time/posix_time_duration.hpp>
+#include <boost/date_time/posix_time/ptime.hpp>
+#include <boost/date_time/posix_time/time_parsers.hpp>
 
+using namespace boost::posix_time;
 using namespace std::string_literals;   
 
-namespace secret_handshake {
-    std::vector<std::string> commands(int n) {
-        if (n == 0) return {};
-        std::vector<std::string> r{};
-        std::bitset<5> bits(n);
-        static std::string p[] = {
-            "wink"s,
-            "double blink"s,
-            "close your eyes"s,
-            "jump"s,
-        };
-        for (size_t i{0}; i < 4; ++i) {
-            if (!bits.test(i)) continue;
-            r.push_back(p[i]);
-        }
-        if (bits.test(4)) {
-            std::reverse(r.begin(), r.end());
-        }        
-        return r;
+namespace gigasecond {
+    static auto advance(ptime from) {
+        return from + seconds(1'000'000'000);
     }
-}  // namespace secret_handshake
+}  // namespace gigasecond
 
 int main() {
-    secret_handshake::commands(1);
-    secret_handshake::commands(6);
-    secret_handshake::commands(23);
-    secret_handshake::commands(24);
-    secret_handshake::commands(25);
-    secret_handshake::commands(31);
+    const ptime d = time_from_string("2011-04-25 00:00:00");
+    
     return 0;
 }
