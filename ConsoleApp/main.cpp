@@ -5,8 +5,11 @@
 #include <set>
 #include <utility>
 #include <deque>
+#include <format>
+#include <numeric>
 using std::cout;
 using std::endl;
+using std::format;
 
 /**
  * Definition for a binary tree node.
@@ -31,66 +34,36 @@ struct TreeNode {
 
 class Solution {
 public:
+    int minDepth(TreeNode* root) {
+        int min{ 0 };
+        if (root == nullptr) return min;
 
-    int maxDepth(TreeNode* root) {
-        // dfs
-        int max{ 0 };
+        int init{ 999999 };
+        min = init;
+
         std::deque<std::pair<TreeNode*, int>> possible{ {root, 1} };
         while (possible.size() > 0) {
             auto [current, level] = possible.front();
             possible.pop_front();
-            if (level > max) {
-                max = level;
-            }
 
             if (current->left != nullptr) {
-                // +1 depth from level
                 possible.push_back({ current->left, level + 1 });
             }
             if (current->right != nullptr) {
-                // +1 depth from level
                 possible.push_back({ current->right, level + 1 });
             }
+            if (current->left == nullptr && current->right == nullptr) {
+                if (min > level) {
+                    min = level;
+                }
+            }
         }
+        if (min == init) return 0;
 
-        return max;
+        return min;
     }
 };
 
-void t1() {
-    //  Input: root = [3, 9, 20, null, null, 15, 7]
-    TreeNode n3(3);
-    TreeNode n9(9);
-    TreeNode n20(20);
-    TreeNode n15(15);
-    TreeNode n7(7);
-    n3.left = &n9;
-    n3.right = &n20;
-    n20.left = &n15;
-    n20.right = &n7;
-    
-    Solution s;
-    int d = s.maxDepth(&n3);
-
-    //  Output : 3
-    cout << d << " expected to be " << 3 << endl;
-}
-
-void t2() {
-    //  Input : root = [1, null, 2]
-    TreeNode n1(1);
-    TreeNode n2(2);
-    n1.right = &n2;
-
-    Solution s;
-    int d = s.maxDepth(&n1);
-
-    //  Output : 2
-    cout << d << " expected to be " << 2 << endl;
-}
-
 int main() {
-    t1();
-    t2();
     return 0;
 }
