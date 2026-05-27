@@ -1,56 +1,62 @@
-﻿//Compute the prime factors of a given natural number.
-//A prime number is only evenly divisible by itself and 1.
-//Note that 1 is not a prime number.
+﻿//  The first time you turn on a robot, a random name is generated in the format of 
+//  two uppercase letters followed by three digits, such as RX837 or BC811.
+//  Every once in a while we need to reset a robot to its factory settings, which means 
+//  that its name gets wiped. The next time you ask, that robot will respond with a new random name.
+//  The names must be random: they should not follow a predictable sequence.
+//  Using random names means a risk of collisions. Your solution must ensure that every existing robot has a unique name.
 #include <iostream>
-#include <vector>
-#include <utility>
+#include <string>
+#include <format>
+#include <random>
+#include <sstream>
+#include <iomanip>
 
-using std::vector;
-using std::pair;
-
-namespace prime_factors {
-    vector<long long> of(long long number) {
-        vector<long long> r{};
-        auto n = number;
-        long long f{2};
-        while (n > 1) {
-            if (n % f != 0) {
-                f++;
-            }
-            else {
-                n /= f;
-                r.push_back(f);
-            }
-        }
-        return r;
-    }
-}  // namespace prime_factors
-
-int main() {
-    vector<pair<long long, vector<long long>>> tests{
-        {1, {}},
-        {2, {2}},
-        {3, {3}},
-        {9, {3, 3}},
-        {4, {2, 2}},
-        {8, {2, 2, 2}},
-        {27, {3, 3, 3}},
-        {625, {5, 5, 5, 5}},
-        {6, {2, 3}},
-        {12, {2, 2, 3}},
-        {901255, {5, 17, 23, 461}},
-        {93819012551, {11, 9539, 894119}}
+namespace robot_name {
+    class robot {
+    public:
+        robot();
+        std::string name() const;
+        void reset();
+    private:
+        std::string m_name{};
+        std::default_random_engine m_rengine{};
     };
 
-    for (const auto& [i, expected] : tests) {
-        const auto& f = prime_factors::of(i);
-        if (f == expected) {
-            std::cout << "Correct result for " << i << "\n";
-        }
-        else {
-            std::cout << "Incorrect result for " << i << "\n";
-        }
+    robot::robot() : m_rengine{ (std::random_device())() } {
+        reset();
     }
- 
+    std::string robot::name() const {
+        return m_name;
+    }
+    void robot::reset() {
+        std::uniform_int_distribution letterDistribution{ 0, 25 };
+        std::uniform_int_distribution numberDistribution{ 0, 999 };
+
+        char letter1 = static_cast<char>(static_cast<int>('A') + letterDistribution(m_rengine)); 
+        char letter2 = static_cast<char>(static_cast<int>('A') + letterDistribution(m_rengine)); 
+        int number = numberDistribution(m_rengine);
+
+        std::ostringstream ss{};
+        ss << letter1 << letter2;
+        ss << std::setw(3) << std::setfill('0') << number;
+        m_name = ss.str();
+    }
+}  // namespace robot_name
+
+int main() {
+    using namespace robot_name;
+    robot r;
+    std::cout << r.name();
+    std::cout << '\n';
+    r.reset();
+    std::cout << r.name();
+    std::cout << '\n';
+    r.reset();
+    std::cout << r.name();
+    std::cout << '\n';
+    r.reset();
+    std::cout << r.name();
+    std::cout << '\n';
+
     return 0;
 }
