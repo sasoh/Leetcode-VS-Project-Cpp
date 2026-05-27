@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -64,6 +64,6 @@ public:
     }
 };
 
-int main() {
+﻿int main() {
     return 0;
 }
