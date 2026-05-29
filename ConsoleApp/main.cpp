@@ -1,58 +1,74 @@
-﻿//  Recite the lyrics to that beloved classic, that field - trip favorite : 99 Bottles of Beer on the Wall.
-//  Note that not all verses are identical.
-//  3 bottles of beer on the wall, 3 bottles of beer.
-//  Take one down and pass it around, 2 bottles of beer on the wall.
-//  2 bottles of beer on the wall, 2 bottles of beer.
-//  Take one down and pass it around, 1 bottle of beer on the wall.
-//  1 bottle of beer on the wall, 1 bottle of beer.
-//  Take it down and pass it around, no more bottles of beer on the wall.
-//  No more bottles of beer on the wall, no more bottles of beer.
-//  Go to the store and buy some more, 99 bottles of beer on the wall.
+﻿// The Atbash cipher is a simple substitution cipher that relies on transposing 
+// all the letters in the alphabet such that the resulting alphabet is backwards.
+// The first letter is replaced with the last letter, the second with the second - last, and so on.
+// Ciphertext is written out in groups of fixed length, the traditional group size being 5 letters, 
+// leaving numbers unchanged, and punctuation is excluded. This is to make it harder to guess things 
+// based on word boundaries. All text will be encoded as lowercase letters.
 
 #include <iostream>
 #include <format>
 #include <string>
 #include <sstream>
+#include <algorithm>
+#include <cctype>
+#include <cmath>
 using std::format;
 using std::cout;
 using std::endl;
 using namespace std::string_literals;
 
-namespace beer_song {
-    std::string verse(int bottles) {
-        if (bottles == 0) {
-            return "No more bottles of beer on the wall, no more bottles of beer.\nGo to the store and buy some more, 99 bottles of beer on the wall.\n"s;
+namespace atbash_cipher {
+    namespace {
+        char flipAlphabeticChar(char c) {
+            return static_cast<char>('z' - std::abs(std::tolower(c) - 'a'));
         }
-        if (bottles == 1) {
-            return "1 bottle of beer on the wall, 1 bottle of beer.\nTake it down and pass it around, no more bottles of beer on the wall.\n"s;
-        }
-        std::stringstream v{};
-        v << bottles << " bottles of beer on the wall, " << bottles << " bottles of beer.\n";
-        v << "Take one down and pass it around, " << bottles - 1;
-        if (bottles == 2) {
-            v << " bottle of beer on the wall.\n";
-        }
-        else {
-            v << " bottles of beer on the wall.\n";
-        }
-        return v.str();
     }
-    std::string sing(int from, int to = 0) {
-        std::stringstream s{};
 
-        for (int i{ from }; i >= to; --i) {
-            s << verse(i);
-            if (from - to > 1 && i > to) {
-                s << "\n";
+    std::string encode(const std::string& input) {
+        auto trimmed{ input };
+        trimmed.erase(remove_if(trimmed.begin(), trimmed.end(), isspace), trimmed.end());
+        trimmed.erase(remove_if(trimmed.begin(), trimmed.end(), ispunct), trimmed.end());
+        std::stringstream r{};
+        size_t totalLength = trimmed.size();
+        for (size_t i{ 0 }; i < totalLength; i += 5) {
+            for (size_t j{ i }; j < i + 5 && j < totalLength; j++) {
+                auto currentCharacter = trimmed[j];
+                if (isdigit(currentCharacter)) {
+                    r << currentCharacter;
+                }
+                else {
+                    r << flipAlphabeticChar(currentCharacter);
+                }
+            }
+            if (i + 5 < totalLength) {
+                r << " ";
             }
         }
 
-        return s.str();
+        return r.str();
     }
-}  // namespace beer_song
+    std::string decode(const std::string& input) {
+        std::stringstream r{};
+        auto trimmed{ input };
+        trimmed.erase(remove_if(trimmed.begin(), trimmed.end(), isspace), trimmed.end());
+
+        for (auto c: trimmed) {
+            r << (isdigit(c) ? c : flipAlphabeticChar(c));
+        }
+
+        return r.str();
+    }
+}  // namespace atbash_cipher
 
 int main() {
-    //cout << beer_song::verse(1) << endl;
-    cout << beer_song::sing(8, 6) << endl;
+    // Encoding test gives gvhg
+    // Encoding x123 yes gives c123b vh
+    // Decoding gvhg gives test
+    // Decoding gsvjf rxpyi ldmul cqfnk hlevi gsvoz abwlt gives thequickbrownfoxjumpsoverthelazydog
+    //cout << atbash_cipher::encode("test");
+    //cout << atbash_cipher::encode("x123 yes");
+    cout << atbash_cipher::decode("gvhg");
+    //cout << atbash_cipher::encode("test1 test2 test3 te");
+    //cout << atbash_cipher::encode("gsvjf rxpyi ldmul cqfnk hlevi gsvoz abwlt");
     return 0;
 }
