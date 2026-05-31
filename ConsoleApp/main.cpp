@@ -1,46 +1,59 @@
-﻿#include <iostream>
-#include <format>
-#include <vector>
-#include <string>
-#include <sstream>
-#include <algorithm>
+﻿#include <algorithm>
 #include <cctype>
-#include <cmath>
+#include <iostream>
 #include <stdexcept>
-using std::format;
+#include <string>
 using std::cout;
 using std::endl;
 using namespace std::string_literals;
 
-namespace binary_search {
-    size_t find(std::vector<int> data, int number)
-    {
-        int lower = 0;
-        int upper = data.size() - 1;
-        while (lower <= upper) {
-            int middle = (lower + upper) / 2;
-            int current = data[middle];
-            cout << format("[{}; {}] ({})\n", lower, upper, current);
-            if (current == number) {
-                return middle;
-            }
-            if (current < number) {
-                lower = middle;
-            }
-            else {
-                upper = middle;
-            }
-        }
+namespace phone_number {
+    class phone_number {
+    public:
+        phone_number(const std::string& n);
+        std::string number() const;
+    private:
+        std::string clean_number(const std::string& n);
+        std::string m_number{};
+    };
 
-        throw std::domain_error("Element not in collection");
+    phone_number::phone_number(const std::string& n) : m_number{ clean_number(n) } {}
+
+    std::string phone_number::number() const
+    {
+        return m_number;
     }
-}  // namespace binary_search
+
+    namespace {
+        int char_to_int(char c) {
+            return c - '0';
+        }
+    }
+
+    std::string phone_number::clean_number(const std::string& n)
+    {
+        std::string trimmed{ n };
+        if (trimmed.size() < 10) throw std::domain_error("Incorrect input number.");
+        trimmed.erase(remove_if(trimmed.begin(), trimmed.end(), isspace), trimmed.end());
+        for (size_t i{0}; i < trimmed.size(); ++i) {
+            char c = trimmed[i];
+            if (isdigit(c)) continue;
+            if (c == '+' || c == '.' || c == '-' || c == '(' || c == ')') continue;
+            throw std::domain_error("Incorrect input number.");
+        }
+        trimmed.erase(remove_if(trimmed.begin(), trimmed.end(), ispunct), trimmed.end());
+
+        if (trimmed[0] == '1' && trimmed.size() > 10) trimmed.erase(0, 1);
+        if (char_to_int(trimmed[0]) < 2) throw std::domain_error("Incorrect input number.");
+        if (char_to_int(trimmed[3]) < 2) throw std::domain_error("Incorrect input number.");
+
+        if (trimmed.size() > 10) throw std::domain_error("Incorrect input number.");
+        return trimmed;
+    }
+}  // namespace phone_number
 
 int main() {
-    const std::vector<int> data{ 1, 3, 4, 6, 8, 9, 11 };
-    const std::size_t actual = binary_search::find(data, 3);
-    const std::size_t expected = 2;
-    cout << actual << " vs " << expected << endl;
-
+    //phone_number::phone_number("223.456.7890");
+    phone_number::phone_number("(223) 456-7890");
     return 0;
 }
