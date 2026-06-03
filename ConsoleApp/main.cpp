@@ -1,130 +1,93 @@
-﻿#include <algorithm>
-#include <cctype>
+﻿#include <format>
 #include <iostream>
-#include <stdexcept>
-#include <string>
-#include <cmath>
+
 #include <vector>
-using std::cout;
-using std::endl;
+#include <array>
+#include <string>
 using namespace std::string_literals;
 
-namespace complex_numbers {
-    class Complex {
-    public:
-        Complex(double real, double imag);
-        bool operator=(const Complex& rhs) const;
-        double real() const;
-        double imag() const;
-        Complex conj() const;
-        double abs() const;
-        Complex exp() const;
-        friend Complex operator+(const Complex& lhs, const Complex& rhs);
-        friend Complex operator+(const Complex& lhs, double rhs);
-        friend Complex operator+(double lhs, const Complex& rhs);
-        friend Complex operator-(const Complex& lhs, const Complex& rhs);
-        friend Complex operator-(const Complex& lhs, double rhs);
-        friend Complex operator-(double lhs, const Complex& rhs);
-        friend Complex operator*(const Complex& lhs, const Complex& rhs);
-        friend Complex operator*(const Complex& lhs, double rhs);
-        friend Complex operator*(double lhs, const Complex& rhs);
-        friend Complex operator/(const Complex& lhs, const Complex& rhs);
-        friend Complex operator/(const Complex& lhs, double rhs);
-        friend Complex operator/(double lhs, const Complex& rhs);
-    private:
-        double m_real{};
-        double m_imag{};
+namespace {
+    static std::array<std::string, 8> song_animals[]{
+        "fly"s,
+        "spider"s,
+        "bird"s,
+        "cat"s,
+        "dog"s,
+        "goat"s,
+        "cow"s,
+        "horse"s,
     };
+    static std::array<std::string, 8> song_animals_second[]{
+        ""s,
+        "It wriggled and jiggled and tickled inside her."s,
+        "How absurd to swallow a bird!"s,
+        "Imagine that, to swallow a cat!"s,
+        "What a hog, to swallow a dog!"s,
+        "Just opened her throat and swallowed a goat!"s,
+        "I don't know how she swallowed a cow!"s,
+    };
+    static std::string verse_end{"I don't know why she swallowed the fly. Perhaps she'll die."s};
+    static std::string song_end{"She's dead, of course!"s};
+}
 
-    Complex::Complex(double real, double imag) : m_real{ real }, m_imag{ imag } {}
-    double Complex::real() const
+namespace food_chain {
+    std::string verse(size_t n);
+    std::string verses(size_t from, size_t to);
+    std::string sing();
+
+    std::string verse(size_t n)
     {
-        return m_real;
+        std::string r{ "I know an old lady who swallowed a " };
+        r.append(song_animals->at(n - 1) + '.');
+
+        if (n < song_animals->size()) {
+            for (size_t i{ n - 1 }; i > 0; --i) {
+                if (i == n - 1) {
+                    r.append('\n' + song_animals_second->at(i));
+                }
+
+                if (i == 2) {
+                    r.append("\nShe swallowed the " + song_animals->at(i) + " to catch the " + song_animals->at(i - 1) + " that wriggled and jiggled and tickled inside her.");
+                }
+                else {
+                    r.append("\nShe swallowed the " + song_animals->at(i) + " to catch the " + song_animals->at(i - 1) + ".");
+                }
+            }
+
+            r.append('\n' + verse_end);
+        }
+        else {
+            r.append('\n' + song_end);
+        }
+
+        return r;
     }
-    double Complex::imag() const
+    std::string verses(size_t from, size_t to)
     {
-        return m_imag;
+        std::string r{};
+
+        for (size_t i{from}; i <= to; ++i) {
+            r += verse(i);
+            if (i < to) {
+                r += "\n\n";
+            }
+        }
+
+        return r;
     }
-    Complex Complex::conj() const
+    std::string sing()
     {
-        return { m_real, -m_imag };
+        return verses(1, 8);
     }
-    double Complex::abs() const
-    {
-        return std::sqrt(m_real * m_real + m_imag * m_imag);
-    }
-    Complex Complex::exp() const
-    {
-        //e ^ (a + b * i) = e ^ a * e ^ (b * i)
-        //    = e ^ a * (cos(b) + i * sin(b))
-        auto ea = std::exp(m_real);
-        return Complex{
-            ea * std::cos(m_imag),
-            ea * std::sin(m_imag)
-        };
-    }
-    Complex operator+(const Complex& lhs, const Complex& rhs)
-    {
-        return { lhs.m_real + rhs.m_real, lhs.m_imag + rhs.m_imag };
-    }
-    Complex operator+(const Complex& lhs, double rhs)
-    {
-        return lhs + Complex{ rhs, 0 };
-    }
-    Complex operator+(double lhs, const Complex& rhs)
-    {
-        return operator+(rhs, lhs);
-    }
-    Complex operator-(const Complex& lhs, const Complex& rhs)
-    {
-        return { lhs.m_real - rhs.m_real, lhs.m_imag - rhs.m_imag };
-    }
-    Complex operator-(const Complex& lhs, double rhs)
-    {
-        return lhs - Complex{ rhs, 0 };
-    }
-    Complex operator-(double lhs, const Complex& rhs)
-    {
-        return Complex{ lhs, 0 } - rhs;
-    }
-    Complex operator*(const Complex& lhs, const Complex& rhs)
-    {
-        //z1* z2 = (a + b * i) * (c + d * i)
-        //    = (a * c - b * d) + (b * c + a * d) * i
-        return {
-            lhs.m_real * rhs.m_real - lhs.m_imag * rhs.m_imag,
-            lhs.m_imag * rhs.m_real + lhs.m_real * rhs.m_imag
-        };
-    }
-    Complex operator*(const Complex& lhs, double rhs)
-    {
-        return lhs * Complex{ rhs, 0 };
-    }
-    Complex operator*(double lhs, const Complex& rhs)
-    {
-        return Complex{ lhs, 0 } * rhs;
-    }
-    Complex operator/(const Complex& lhs, const Complex& rhs)
-    {
-        //z1 / z2 = z1 * (1 / z2)
-        //    = (a + b * i) / (c + d * i)
-        //    = (a * c + b * d) / (c ^ 2 + d ^ 2) + (b * c - a * d) / (c ^ 2 + d ^ 2) * i
-        return {
-            (lhs.m_real * rhs.m_real + lhs.m_imag * rhs.m_imag) / (rhs.m_real * rhs.m_real + rhs.m_imag * rhs.m_imag),
-            (lhs.m_imag * rhs.m_real - lhs.m_real * rhs.m_imag) / (rhs.m_real * rhs.m_real + rhs.m_imag * rhs.m_imag)
-        };
-    }
-    Complex operator/(const Complex& lhs, double rhs)
-    {
-        return { lhs.m_real / rhs, lhs.m_imag / rhs };
-    }
-    Complex operator/(double lhs, const Complex& rhs)
-    {
-        return Complex{ lhs, 0 } / rhs;
-    }
-}  // namespace complex_numbers
+}  // namespace food_chain
 
 
 int main() {
+    //std::cout << food_chain::verse(1) << '\n';
+    //std::cout << food_chain::verse(8) << '\n';
+    //std::cout << food_chain::verse(2) << '\n';
+    //std::cout << food_chain::verse(4) << '\n';
+    //std::cout << food_chain::verses(1, 4) << '\n';
+    std::cout << food_chain::sing() << '\n';
     return 0;
 }
