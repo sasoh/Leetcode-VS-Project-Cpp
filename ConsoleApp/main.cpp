@@ -1,93 +1,140 @@
 ﻿#include <format>
 #include <iostream>
-
-#include <vector>
 #include <array>
 #include <string>
+#include <vector>
 using namespace std::string_literals;
 
-namespace {
-    static std::array<std::string, 8> song_animals[]{
-        "fly"s,
-        "spider"s,
-        "bird"s,
-        "cat"s,
-        "dog"s,
-        "goat"s,
-        "cow"s,
-        "horse"s,
-    };
-    static std::array<std::string, 8> song_animals_second[]{
-        ""s,
-        "It wriggled and jiggled and tickled inside her."s,
-        "How absurd to swallow a bird!"s,
-        "Imagine that, to swallow a cat!"s,
-        "What a hog, to swallow a dog!"s,
-        "Just opened her throat and swallowed a goat!"s,
-        "I don't know how she swallowed a cow!"s,
-    };
-    static std::string verse_end{"I don't know why she swallowed the fly. Perhaps she'll die."s};
-    static std::string song_end{"She's dead, of course!"s};
-}
-
-namespace food_chain {
-    std::string verse(size_t n);
-    std::string verses(size_t from, size_t to);
-    std::string sing();
-
-    std::string verse(size_t n)
+namespace roman_numerals {
+    std::string convert(int number)
     {
-        std::string r{ "I know an old lady who swallowed a " };
-        r.append(song_animals->at(n - 1) + '.');
 
-        if (n < song_animals->size()) {
-            for (size_t i{ n - 1 }; i > 0; --i) {
-                if (i == n - 1) {
-                    r.append('\n' + song_animals_second->at(i));
-                }
+        int thousands = number / 1000;
+        int hundreds = (number % 1000) / 100;
+        int tens = (number % 100) / 10;
+        int singles = number % 10;
+        std::cout << std::format("{}, {}, {}, {}\n", thousands, hundreds, tens, singles);
 
-                if (i == 2) {
-                    r.append("\nShe swallowed the " + song_animals->at(i) + " to catch the " + song_animals->at(i - 1) + " that wriggled and jiggled and tickled inside her.");
+        std::string r{};
+        for (size_t i{ 0 }; i < thousands; ++i) {
+            r += "M";
+        }
+
+        if (hundreds > 3) {
+            if (hundreds < 5) {
+                r += "CD";
+            }
+            else {
+                if (hundreds == 5) {
+                    r += "D";
                 }
                 else {
-                    r.append("\nShe swallowed the " + song_animals->at(i) + " to catch the " + song_animals->at(i - 1) + ".");
+                    int d = hundreds - 5;
+                    if (d < 4) {
+                        r += "D";
+                        for (size_t i{ 0 }; i < d; ++i) {
+                            r += "C";
+                        }
+                    }
+                    else {
+                        for (size_t i{ 0 }; i < 5 - d; ++i) {
+                            r += "C";
+                        }
+                        r += "M";
+                    }
                 }
             }
-
-            r.append('\n' + verse_end);
         }
         else {
-            r.append('\n' + song_end);
-        }
-
-        return r;
-    }
-    std::string verses(size_t from, size_t to)
-    {
-        std::string r{};
-
-        for (size_t i{from}; i <= to; ++i) {
-            r += verse(i);
-            if (i < to) {
-                r += "\n\n";
+            for (size_t i{ 0 }; i < hundreds; ++i) {
+                r += "C";
             }
         }
 
+        if (tens > 3) {
+            if (tens < 5) {
+                r += "XL";
+            }
+            else {
+                if (tens == 5) {
+                    r += "L";
+                }
+                else {
+                    int d = tens - 5;
+                    if (d < 4) {
+                        r += "L";
+                        for (size_t i{ 0 }; i < d; ++i) {
+                            r += "X";
+                        }
+                    }
+                    else {
+                        for (size_t i{ 0 }; i < 5 - d; ++i) {
+                            r += "X";
+                        }
+                        r += "C";
+                    }
+                }
+            }
+        }
+        else {
+            for (size_t i{ 0 }; i < tens; ++i) {
+                r += "X";
+            }
+        }
+
+        if (singles > 3) {
+            if (singles < 5) {
+                r += "IV";
+            }
+            else {
+                if (singles == 5) {
+                    r += "V";
+                }
+                else {
+                    int d = singles - 5;
+                    if (d < 4) {
+                        r += "V";
+                        for (size_t i{ 0 }; i < d; ++i) {
+                            r += "I";
+                        }
+                    }
+                    else {
+                        for (size_t i{ 0 }; i < 5 - d; ++i) {
+                            r += "I";
+                        }
+                        r += "X";
+                    }
+                }
+            }
+        }
+        else {
+            for (size_t i{ 0 }; i < singles; ++i) {
+                r += "I";
+            }
+        }
+
+        std::cout << std::format("{} -> {}\n", number, r);
         return r;
     }
-    std::string sing()
-    {
-        return verses(1, 8);
-    }
-}  // namespace food_chain
-
+}  // namespace roman_numerals
 
 int main() {
-    //std::cout << food_chain::verse(1) << '\n';
-    //std::cout << food_chain::verse(8) << '\n';
-    //std::cout << food_chain::verse(2) << '\n';
-    //std::cout << food_chain::verse(4) << '\n';
-    //std::cout << food_chain::verses(1, 4) << '\n';
-    std::cout << food_chain::sing() << '\n';
+    //roman_numerals::convert(3485); // MMMCDLXXXV
+    //roman_numerals::convert(485); // CDLXXXV
+    //roman_numerals::convert(1);
+    //roman_numerals::convert(2);
+    //roman_numerals::convert(3);
+    //roman_numerals::convert(4);
+    //roman_numerals::convert(5);
+    //roman_numerals::convert(6);
+    //roman_numerals::convert(7);
+    //roman_numerals::convert(8);
+    //roman_numerals::convert(9);
+    //roman_numerals::convert(10);
+    roman_numerals::convert(300);
+    roman_numerals::convert(405);
+    roman_numerals::convert(525);
+    roman_numerals::convert(725);
+    roman_numerals::convert(925);
     return 0;
 }
