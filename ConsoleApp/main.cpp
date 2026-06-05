@@ -1,140 +1,61 @@
-﻿#include <format>
+﻿#include <algorithm>
+#include <cctype>
+#include <format>
 #include <iostream>
-#include <array>
 #include <string>
-#include <vector>
 using namespace std::string_literals;
 
-namespace roman_numerals {
-    std::string convert(int number)
-    {
-
-        int thousands = number / 1000;
-        int hundreds = (number % 1000) / 100;
-        int tens = (number % 100) / 10;
-        int singles = number % 10;
-        std::cout << std::format("{}, {}, {}, {}\n", thousands, hundreds, tens, singles);
-
-        std::string r{};
-        for (size_t i{ 0 }; i < thousands; ++i) {
-            r += "M";
-        }
-
-        if (hundreds > 3) {
-            if (hundreds < 5) {
-                r += "CD";
-            }
-            else {
-                if (hundreds == 5) {
-                    r += "D";
-                }
-                else {
-                    int d = hundreds - 5;
-                    if (d < 4) {
-                        r += "D";
-                        for (size_t i{ 0 }; i < d; ++i) {
-                            r += "C";
-                        }
-                    }
-                    else {
-                        for (size_t i{ 0 }; i < 5 - d; ++i) {
-                            r += "C";
-                        }
-                        r += "M";
-                    }
-                }
-            }
-        }
-        else {
-            for (size_t i{ 0 }; i < hundreds; ++i) {
-                r += "C";
-            }
-        }
-
-        if (tens > 3) {
-            if (tens < 5) {
-                r += "XL";
-            }
-            else {
-                if (tens == 5) {
-                    r += "L";
-                }
-                else {
-                    int d = tens - 5;
-                    if (d < 4) {
-                        r += "L";
-                        for (size_t i{ 0 }; i < d; ++i) {
-                            r += "X";
-                        }
-                    }
-                    else {
-                        for (size_t i{ 0 }; i < 5 - d; ++i) {
-                            r += "X";
-                        }
-                        r += "C";
-                    }
-                }
-            }
-        }
-        else {
-            for (size_t i{ 0 }; i < tens; ++i) {
-                r += "X";
-            }
-        }
-
-        if (singles > 3) {
-            if (singles < 5) {
-                r += "IV";
-            }
-            else {
-                if (singles == 5) {
-                    r += "V";
-                }
-                else {
-                    int d = singles - 5;
-                    if (d < 4) {
-                        r += "V";
-                        for (size_t i{ 0 }; i < d; ++i) {
-                            r += "I";
-                        }
-                    }
-                    else {
-                        for (size_t i{ 0 }; i < 5 - d; ++i) {
-                            r += "I";
-                        }
-                        r += "X";
-                    }
-                }
-            }
-        }
-        else {
-            for (size_t i{ 0 }; i < singles; ++i) {
-                r += "I";
-            }
-        }
-
-        std::cout << std::format("{} -> {}\n", number, r);
-        return r;
+namespace bob {
+    static bool IsQuestion(const std::string& i) {
+        constexpr char kQuestion = '?';
+        return i.back() == kQuestion;
     }
-}  // namespace roman_numerals
+
+    static bool IsShouting(const std::string& i) {
+        bool hasLowercaseLetters{ false };
+        bool hasCapitalLetters{ false };
+        bool hasLetters{ false };
+        for (auto c : i) {
+            if (!isalpha(c)) continue;
+            hasLowercaseLetters = hasLowercaseLetters || islower(c);
+            hasCapitalLetters = hasCapitalLetters || isupper(c);
+        }
+        return hasCapitalLetters && !hasLowercaseLetters;
+    }
+
+    static bool IsNothing(const std::string& i) {
+        return i.size() == 0;
+    }
+
+    std::string hey(const std::string& i)
+    {
+        std::string trimmed{ i };
+        trimmed.erase(std::remove_if(trimmed.begin(), trimmed.end(), isspace), trimmed.end());
+        if (IsNothing(trimmed)) {
+            return "Fine. Be that way!"s;
+        }
+        if (IsShouting(trimmed)) {
+            if (IsQuestion(trimmed)) {
+                return "Calm down, I know what I'm doing!"s;
+            }
+            return "Whoa, chill out!"s;
+        }
+        if (IsQuestion(trimmed)) {
+            return "Sure."s;
+        }
+        return "Whatever."s;
+    }
+}  // namespace bob
 
 int main() {
-    //roman_numerals::convert(3485); // MMMCDLXXXV
-    //roman_numerals::convert(485); // CDLXXXV
-    //roman_numerals::convert(1);
-    //roman_numerals::convert(2);
-    //roman_numerals::convert(3);
-    //roman_numerals::convert(4);
-    //roman_numerals::convert(5);
-    //roman_numerals::convert(6);
-    //roman_numerals::convert(7);
-    //roman_numerals::convert(8);
-    //roman_numerals::convert(9);
-    //roman_numerals::convert(10);
-    roman_numerals::convert(300);
-    roman_numerals::convert(405);
-    roman_numerals::convert(525);
-    roman_numerals::convert(725);
-    roman_numerals::convert(925);
+    //std::cout << std::format("{}\n", bob::hey("FCECDFCAAB"));
+    //std::cout << std::format("{}\n", bob::hey("Tom - ay - to, tom - aaaah - to."));
+    std::cout << std::format("{}\n", bob::hey("Does this cryogenic chamber make me look fat?"));
+    std::cout << std::format("{}\n", bob::hey("WHAT THE HELL WERE YOU THINKING?"));
+    std::cout << std::format("{}\n", bob::hey("WHAT THE HELL WERE YOU THINKING? "));
+    std::cout << std::format("{}\n", bob::hey("1, 2, 3 GO!"));
+    std::cout << std::format("{}\n", bob::hey("1, 2, 3"));
+    std::cout << std::format("{}\n", bob::hey(""));
+    std::cout << std::format("{}\n", bob::hey("    "));
     return 0;
 }
