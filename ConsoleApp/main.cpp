@@ -6,70 +6,88 @@
 #include <map>
 #include <format>
 #include <vector>
+#include <stdexcept>
+#include <locale>
+#include <cmath>
 using namespace std::string_literals;
 
-namespace word_count {
-    std::string trimmedWord(const std::string& input) {
-        if (!std::any_of(input.begin(), input.end(), isalnum)) return ""s; 
-    
-        std::string word{ input };
-        word.erase(std::remove_if(word.begin(), word.end(), isspace), word.end());
-        if (word.size() == 0) return word;
+namespace {
+    static std::string normalize(const std::string& i) {
+        std::string n{ i };
 
-        std::vector<size_t> indices{};
-        for (size_t i{ 0 }; i < word.size(); ++i) {
-            auto c = word[i];
+        n.erase(std::remove_if(n.begin(), n.end(), isspace), n.end());
+        n.erase(std::remove_if(n.begin(), n.end(), ispunct), n.end());
+        std::transform(n.begin(), n.end(), n.begin(), [](auto c) { return std::tolower(c); });
 
-            if (ispunct(c)) {
-                if (i == 0 || i == word.size() - 1 || (!isalpha(word[i - 1]) || !isalpha(word[i + 1]))) {
-                    indices.push_back(i);
-                }                
+        size_t r{};
+        size_t c{};
+        double rootOfSize = std::sqrt(n.size());
+        int ceil = std::ceil(rootOfSize);
+        if (ceil * (ceil - 1) >= static_cast<int>(n.size())) {
+            r = ceil - 1;
+            c = ceil;
+        }
+        else {
+            r = c = ceil;
+        }
+
+        std::string normalized{};
+        std::vector<std::vector<char>> matrix{};
+        for (size_t i{ 0 }; i < r; ++i) {
+            std::string line = n.substr(i * c, c);
+            std::vector<char> l{};
+            for (size_t j{ 0 }; j < line.size(); ++j) {
+                l.push_back(line[j]);
             }
+            if (line.size() < c) {
+                // add more
+                for (size_t j{ 0 }; j < c - line.size(); ++j) {
+                    l.push_back(' ');
+                }
+            }
+            matrix.push_back(l);
         }
 
-        std::for_each(indices.rbegin(), indices.rend(), [&](int i) { word.erase(word.begin() + i); });
-
-        for (auto i{word.begin()}; i != word.end(); ++i) {
-            *i = std::tolower(*i);
+        for (size_t j{ 0 }; j < c; ++j) {
+            std::string enc_line{};
+            for (size_t i{ 0 }; i < r; ++i) {
+                normalized.push_back(matrix[i][j]);
+                enc_line.push_back(matrix[i][j]);
+            }
+            if (j < c - 1) {
+                normalized.push_back(' ');
+                enc_line.push_back(' ');
+            }
+            std::cout << std::format("enc {}\n", enc_line);
         }
 
-        return word;
+        std::cout << std::format("'{}' -> '{}'\n", i, normalized);
+        return normalized;
     }
+}
 
-    std::map<std::string, int> words(const std::string& input) {
-        std::map<std::string, int> r{};
-        auto next = input.begin();
-        auto last = next;
-        while (next != input.end()) {
-            last = next;
-            next = std::find_if(next + 1, input.end(), [](const char c) { 
-                return !isalnum(c) && c != '\'';
-            }); 
-            if (last == next) {
-                break;
-            }
+namespace crypto_square {
+    class cipher {
+    public:
+        cipher(const std::string& i = ""s);
+        std::string normalized_cipher_text() const;
+    private:
+        std::string m_normalized_text{};
+    };
 
-            std::string word = trimmedWord({ last, next });
-            if (word.size() > 0) {
-                r[word]++;
-            }
-        }
-
-        return r;
+    cipher::cipher(const std::string& i) : m_normalized_text{ normalize(i) }
+    {}
+    std::string cipher::normalized_cipher_text() const
+    {
+        return m_normalized_text;
     }
-}  // namespace word_count
-
+}  // namespace crypto_square
 
 int main() {
-    //const std::map<std::string, int> expected{ {"word", 1} };
-    //const std::map<std::string, int> expected{ {"Joe can't tell between app, apple and a.", 1} };
-    //auto r = word_count::words("Joe can't tell between app, apple and a.");
-    //auto r = word_count::words("can't cant,can't");
-    auto r = word_count::words("'First: don't laugh. Then: don't cry. You're getting it.'");
-    //auto r = word_count::words("");
-    //auto r = word_count::words("one,two,three");
-    //auto r = word_count::words(",\n,one,\n ,two \n 'three'");
-    //auto r = word_count::words("can, can't, 'can't'");
-    //REQUIRE(expected == word_count::words("word"));
-     return 0;
+    //crypto_square::cipher("8 character plaintext results in 3 chunks, the last one with a trailing space.").normalized_cipher_text();
+    crypto_square::cipher("If man was meant to stay on the ground, god would have given us roots.").normalized_cipher_text();
+    //crypto_square::cipher("This is fun!").normalized_cipher_text();
+    //crypto_square::cipher("Chill out.").normalized_cipher_text();
+    //crypto_square::cipher("@1,%!").normalized_cipher_text();
+    return 0;
 }
