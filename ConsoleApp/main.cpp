@@ -9,85 +9,33 @@
 #include <stdexcept>
 #include <locale>
 #include <cmath>
+#include <iomanip>
+#include <ios>
 using namespace std::string_literals;
 
-namespace {
-    static std::string normalize(const std::string& i) {
-        std::string n{ i };
-
-        n.erase(std::remove_if(n.begin(), n.end(), isspace), n.end());
-        n.erase(std::remove_if(n.begin(), n.end(), ispunct), n.end());
-        std::transform(n.begin(), n.end(), n.begin(), [](auto c) { return std::tolower(c); });
-
-        int s = static_cast<int>(n.size());
-        int r{};
-        int c{};
-        double rootOfSize = std::sqrt(s);
-        int ceil = static_cast<int>(std::ceil(rootOfSize));
-        if (ceil * (ceil - 1) >= s) {
-            r = ceil - 1;
-            c = ceil;
-        }
-        else {
-            r = c = ceil;
-        }
-
-        std::string normalized{};
-        std::vector<std::vector<char>> matrix{};
-        for (size_t i{ 0 }; i < r; ++i) {
-            std::string line = n.substr(i * c, c);
-            std::vector<char> l{};
-            for (size_t j{ 0 }; j < line.size(); ++j) {
-                l.push_back(line[j]);
-            }
-            if (line.size() < c) {
-                for (size_t j{ 0 }; j < c - line.size(); ++j) {
-                    l.push_back(' ');
-                }
-            }
-            matrix.push_back(l);
-        }
-
-        for (size_t j{ 0 }; j < c; ++j) {
-            std::string enc_line{};
-            for (size_t i{ 0 }; i < r; ++i) {
-                normalized.push_back(matrix[i][j]);
-                enc_line.push_back(matrix[i][j]);
-            }
-            if (j < c - 1) {
-                normalized.push_back(' ');
-                enc_line.push_back(' ');
-            }
-            //std::cout << std::format("enc {}\n", enc_line);
-        }
-
-        std::cout << std::format("'{}' -> '{}'\n", i, normalized);
-        return normalized;
-    }
-}
-
-namespace crypto_square {
-    class cipher {
-    public:
-        cipher(const std::string& i = ""s);
-        std::string normalized_cipher_text() const;
-    private:
-        std::string m_normalized_text{};
-    };
-
-    cipher::cipher(const std::string& i) : m_normalized_text{ normalize(i) }
-    {}
-    std::string cipher::normalized_cipher_text() const
+namespace etl {
+    std::map<char, int> transform(const std::map<int, std::vector<char>>& other)
     {
-        return m_normalized_text;
+        std::map<char, int> r{};
+
+        std::for_each(other.begin(), other.end(), [&](auto pair) {
+            
+            auto [points, characters] = pair;
+            std::for_each(characters.begin(), characters.end(), [&](const char c) {
+                r[std::tolower(c)] = points;
+            });
+        }); 
+
+        return r;
     }
-}  // namespace crypto_square
+}  // namespace etl
 
 int main() {
-    //crypto_square::cipher("8 character plaintext results in 3 chunks, the last one with a trailing space.").normalized_cipher_text();
-    //crypto_square::cipher("If man was meant to stay on the ground, god would have given us roots.").normalized_cipher_text();
-    //crypto_square::cipher("This is fun!").normalized_cipher_text();
-    crypto_square::cipher("Chill out.").normalized_cipher_text();
-    //crypto_square::cipher("@1,%!").normalized_cipher_text();
+    const std::map<int, std::vector<char>> old{ {1, {'A', 'E', 'I', 'O', 'U'}} };
+    const auto actual = etl::transform(old);
+    const std::map<char, int> expected{
+        {'a', 1}, {'e', 1}, {'i', 1}, {'o', 1}, {'u', 1} };
+    //REQUIRE(expected == actual);    
+    std::cout << std::boolalpha << (actual == expected) << '\n';
     return 0;
 }
