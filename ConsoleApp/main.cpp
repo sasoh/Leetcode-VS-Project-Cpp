@@ -1,66 +1,57 @@
-﻿#include <algorithm>
-#include <cctype>
-#include <format>
-#include <iostream>
+﻿#include <format>
 #include <string>
+#include <set>
 #include <map>
-#include <format>
-#include <vector>
-#include <stdexcept>
-#include <locale>
-#include <cmath>
-#include <iomanip>
-#include <ios>
-#include <stack>
+#include <initializer_list>
+#include <cctype>
+#include <algorithm>
+#include <iterator>
 using namespace std::string_literals;
 
 namespace {
-    bool isBracket(char c) {
-        return c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}';
+    std::map<char, int> frequency(const std::string& word) {
+        std::map<char, int> r{};
+        for (const char c : word) {
+            r[std::tolower(c)] += 1;
+        }
+        return r;
     }
 
-    bool isClosing(char o, char c) {
-        return  (o == '(' && c == ')') || (o == '[' && c == ']') || (o == '{' && c == '}');
+    std::string tolower(const std::string& word) {
+        std::string r{};
+        std::transform(word.begin(), word.end(), std::back_inserter(r), [](const char c) { return std::tolower(c); });
+        return r;
     }
 }
 
-namespace matching_brackets {    
-    bool check(const std::string& input) {
-        // find brackets & put in stack
-        std::stack<char> brackets{};
+namespace anagram {
+    class anagram {
+    public:
+        anagram(const std::string& word);
+        std::set<std::string> matches(const std::initializer_list<std::string>& list) const;
+    private:
+        std::string m_word{};
+        std::map<char, int> m_frequency{};
+    };
 
-        for (auto i{ input.begin() }; i != input.end(); ++i) {
-            char current = *i;
-            if (!isBracket(current)) continue;
-            // if anything in stack, check for match
-            if (!brackets.empty()) {
-                auto top = brackets.top();
-                if (isClosing(top, current)) {
-                    brackets.pop();
-                    continue;
-                }
-            }
-            brackets.push(current);
+    anagram::anagram(const std::string& word) : m_word{ tolower(word) }, m_frequency{ frequency(word) } {}
+
+    std::set<std::string> anagram::matches(const std::initializer_list<std::string>& list) const
+    {
+        std::set<std::string> r{};
+        for (const auto& w : list) {
+            if (tolower(w) == m_word) continue;
+            auto f = frequency(w);
+            if (f != m_frequency) continue;
+            r.insert(w);
         }
-
-        return brackets.empty();
+        return r;
     }
-}  // namespace matching_brackets
+
+}  // namespace anagram
 
 int main() {
-    std::cout << std::boolalpha;
-    std::cout << matching_brackets::check("");
-    std::cout << matching_brackets::check("[]");
-    std::cout << !matching_brackets::check("}{");
-    std::cout << !matching_brackets::check("[[");
-    std::cout << !matching_brackets::check("{]");
-    std::cout << matching_brackets::check("{ }");
-    std::cout << !matching_brackets::check("{[])");
-    std::cout << matching_brackets::check("{}[]");
-    std::cout << matching_brackets::check("([{}({}[])])");
-    std::cout << !matching_brackets::check("{[)][]}");
-    std::cout << !matching_brackets::check("([{])");
-    std::cout << !matching_brackets::check("[({]})");
-    std::cout << !matching_brackets::check("[({}])");
+    auto subject = anagram::anagram("solemn");
+    auto matches = subject.matches({ "cherry", "melons", "lemons" });
     return 0;
 }
