@@ -1,84 +1,48 @@
-﻿#include <format>
-#include <initializer_list>
-#include <memory>
-#include <vector>
-#include <cstdint>
-#include <iostream>
-//using namespace std::string_literals;
+﻿#include <algorithm>
+#include <cctype>
+#include <format>
+#include <string>
 
-
-//REQUIRE(data == tree->data());
-//REQUIRE((bool)tree->left() == has_left);
-//REQUIRE((bool)tree->right() == has_right);
-//tree->insert(*data_iter);
-
-
-// The tests below require an implementation of an iterator.
-// You can get more details here: http://www.cplusplus.com/reference/iterator/
-
-namespace binary_search_tree {
-    template <typename T>
-    class binary_tree
+namespace luhn {
+    bool valid(const std::string& input);
+    
+    bool valid(const std::string& input)
     {
-    public:
-        binary_tree();
-        //binary_tree(const std::initializer_list<T>& items);
-        std::shared_ptr<binary_tree> left() const;
-        std::shared_ptr<binary_tree> right() const;
-        void insert(T element);
-    private:
-        T m_data{};
-        std::shared_ptr<binary_tree> m_left{};
-        std::shared_ptr<binary_tree> m_right{};
-    };
+        std::string temp{input};
+        temp.erase(std::remove_if(temp.begin(), temp.end(), isspace), temp.end());
+        if (input.size() < 2) return false;
+        
+        if (std::remove_if(temp.begin(), temp.end(), isalpha) != temp.end()
+            || std::remove_if(temp.begin(), temp.end(), ispunct) != temp.end()) return false;
 
-    template<typename T>
-    binary_tree<T>::binary_tree() : m_data{}, m_left{ nullptr }, m_right{ nullptr }
-    {}
-
-    template<typename T>
-    std::shared_ptr<binary_tree<T>> binary_tree<T>::left() const
-    {
-        return std::shared_ptr<binary_tree>();
-    }
-    template<typename T>
-    std::shared_ptr<binary_tree<T>> binary_tree<T>::right() const
-    {
-        return std::shared_ptr<binary_tree>();
-    }
-    template<typename T>
-    void binary_tree<T>::insert(T element) {
-        std::cout << "Inserting " << element << '\n';
-    }
-}  // namespace binary_search_tree
-
-
-namespace {
-    template <typename T>
-    using tree_ptr = typename std::unique_ptr<binary_search_tree::binary_tree<T>>;
-
-    template <typename T>
-    static tree_ptr<T> make_tree(const std::vector<T>& data) {
-        if (data.empty()) return tree_ptr<T>(nullptr);
-        auto data_iter = data.begin();
-        auto tree = tree_ptr<T>(new binary_search_tree::binary_tree<T>(*data_iter));
-        ++data_iter;
-        for (; data_iter != data.end(); ++data_iter) {
-            tree->insert(*data_iter);
+        int sum{};
+        int size = static_cast<int>(temp.size());
+        for (int i{ size - 1 }; i >= 0; --i) {
+            const int digit = std::stoi(temp.substr(i, 1));
+            if ((size - i) % 2 == 0) {
+                int doubled = 2 * digit;
+                if (doubled > 9) {
+                    sum += doubled - 9;
+                }
+                else {
+                    sum += doubled;
+                }
+            }
+            else {
+                sum += digit;
+            }
         }
-        return tree;
+        
+
+        return (sum % 10 == 0);
     }
-}
+}  // namespace luhn
 
 int main() {
-    //auto tp = tree_ptr<uint32_t>(std::make_unique<binary_search_tree::binary_tree<uint32_t>>(binary_search_tree::binary_tree<uint32_t>{}));
-    //auto tested = make_tree<uint32_t>({ 4, 2, 6, 1, 3, 5, 7 });
-    //binary_search_tree::binary_tree<uint32_t> t({ 4, 2, 6, 1, 3, 5, 7 });
-
-    auto tp = tree_ptr<uint32_t>(std::make_unique<binary_search_tree::binary_tree<uint32_t>>(binary_search_tree::binary_tree<uint32_t>{}));
-    for (int i{ 0 }; i < 5; ++i) {
-        tp->insert(i + 1);
-    }
-
+    //luhn::valid("1")
+    //luhn::valid("059");
+    //luhn::valid("59");
+    luhn::valid("055 444 285");
+    //luhn::valid("8273 1232 7352 0569");
     return 0;
 }
