@@ -1,23 +1,31 @@
 ﻿#include <string>
 #include <cmath>
+#include <algorithm>
+#include <iostream>
+#include <cctype>
 
-namespace armstrong_numbers {
-    //armstrong_numbers::is_armstrong_number(5)
-    bool is_armstrong_number(int number) {
-        //An Armstrong number is a number that is the sum of its own digits each raised to the power of the number of digits.
-        size_t digitCount = std::to_string(number).size();
-        auto sum{ 0 };
-        int temp{ number };
-        do {
-            int rem = temp % 10;
-            temp /= 10;
-            sum += std::pow(rem, digitCount);
-        } while (temp > 0);
+namespace binary {
+    int convert(const std::string& input) {
+        for (auto i{input.begin()}; i != input.end(); ++i) {
+            if (!isdigit(*i)) return false;
+        }
 
-        return (sum == number);
+        int number{};
+        int size = static_cast<int>(input.size());
+        for (int i{ size - 1 }; i >= 0; --i) {
+            auto c = input.substr(i, 1);
+            auto p = std::pow(2, size - i - 1);
+            auto d = std::stoi(c, nullptr);
+            number += p * d;
+        }
+
+        return number;
     }
-}  // namespace armstrong_numbers
+}  // namespace binary
+
 
 int main() {
+    std::cout << binary::convert("10") << '\n';
+    std::cout << binary::convert("110a") << '\n';
     return 0;
 }
