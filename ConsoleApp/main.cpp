@@ -3,29 +3,36 @@
 #include <algorithm>
 #include <iostream>
 #include <cctype>
+#include <iomanip>
+#include <ios>
+#include <cctype>
 
-namespace binary {
-    int convert(const std::string& input) {
-        for (auto i{input.begin()}; i != input.end(); ++i) {
-            if (!isdigit(*i)) return false;
+namespace hexadecimal {
+    static int convert(const std::string& input) {
+        int r{};
+
+        int count = static_cast<int>(input.size());
+        for (int i = count - 1; i >= 0; --i) {
+            auto substring = input.substr(count - i - 1, 1);
+            auto c = std::tolower(substring[0]);
+            if (c < '0' || c > 'f') return 0;
+            int value = std::stoi(input.substr(count - i - 1, 1), nullptr, 16);
+            r += value * std::pow(16, i);
         }
 
-        int number{};
-        int size = static_cast<int>(input.size());
-        for (int i{ size - 1 }; i >= 0; --i) {
-            auto c = input.substr(i, 1);
-            auto p = std::pow(2, size - i - 1);
-            auto d = std::stoi(c, nullptr);
-            number += p * d;
-        }
-
-        return number;
+        return r;
     }
-}  // namespace binary
-
+}  // namespace hexadecimal
 
 int main() {
-    std::cout << binary::convert("10") << '\n';
-    std::cout << binary::convert("110a") << '\n';
+    //std::cout << std::hex;
+
+    //std::cout << hexadecimal::convert("1") << '\n';
+    //std::cout << hexadecimal::convert("c") << '\n';
+    //std::cout << hexadecimal::convert("10") << '\n';
+    //std::cout << hexadecimal::convert("af") << '\n';
+    //std::cout << hexadecimal::convert("100") << '\n';
+    //std::cout << hexadecimal::convert("19ace") << '\n';
+    std::cout << hexadecimal::convert("carrot") << '\n';
     return 0;
 }
