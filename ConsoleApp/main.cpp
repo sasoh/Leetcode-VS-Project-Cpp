@@ -1,38 +1,26 @@
-﻿#include <string>
-#include <cmath>
-#include <algorithm>
-#include <iostream>
+﻿#include <algorithm>
 #include <cctype>
-#include <iomanip>
-#include <ios>
-#include <cctype>
+#include <map>
+#include <string>
 
-namespace hexadecimal {
-    static int convert(const std::string& input) {
-        int r{};
+namespace isogram {
+    bool is_isogram(const std::string& input) {
+        std::string temp{ input };
+        temp.erase(std::remove_if(temp.begin(), temp.end(), ispunct), temp.end());
+        temp.erase(std::remove_if(temp.begin(), temp.end(), isspace), temp.end());
 
-        int count = static_cast<int>(input.size());
-        for (int i = count - 1; i >= 0; --i) {
-            auto substring = input.substr(count - i - 1, 1);
-            auto c = std::tolower(substring[0]);
-            if (c < '0' || c > 'f') return 0;
-            int value = std::stoi(input.substr(count - i - 1, 1), nullptr, 16);
-            r += value * std::pow(16, i);
+        std::map<char, int> frequency{};
+        for (auto c : temp) {
+            auto cl = std::tolower(c);
+            frequency[cl]++;
+            if (frequency[cl] > 1) return false;
         }
 
-        return r;
+        return true;
     }
-}  // namespace hexadecimal
+}  // namespace isogram
 
 int main() {
-    //std::cout << std::hex;
-
-    //std::cout << hexadecimal::convert("1") << '\n';
-    //std::cout << hexadecimal::convert("c") << '\n';
-    //std::cout << hexadecimal::convert("10") << '\n';
-    //std::cout << hexadecimal::convert("af") << '\n';
-    //std::cout << hexadecimal::convert("100") << '\n';
-    //std::cout << hexadecimal::convert("19ace") << '\n';
-    std::cout << hexadecimal::convert("carrot") << '\n';
+    const bool actual = isogram::is_isogram("");
     return 0;
 }
