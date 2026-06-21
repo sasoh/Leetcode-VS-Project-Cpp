@@ -1,26 +1,30 @@
-﻿#include <algorithm>
-#include <cctype>
-#include <map>
-#include <string>
+﻿#include <vector>
 
-namespace isogram {
-    bool is_isogram(const std::string& input) {
-        std::string temp{ input };
-        temp.erase(std::remove_if(temp.begin(), temp.end(), ispunct), temp.end());
-        temp.erase(std::remove_if(temp.begin(), temp.end(), isspace), temp.end());
+namespace pascals_triangle {
+    std::vector<std::vector<int>> generate_rows(int count)
+    {
+        std::vector<std::vector<int>> r{};
 
-        std::map<char, int> frequency{};
-        for (auto c : temp) {
-            auto cl = std::tolower(c);
-            frequency[cl]++;
-            if (frequency[cl] > 1) return false;
+        for (size_t i{ 0 }; i < count; ++i) {
+            std::vector<int> row{};
+            for (size_t j{ 0 }; j <= i; ++j) {
+                if (i == 0 || j == 0 || j == i) {
+                    row.push_back(1);
+                }
+                else {
+                    auto prev = r[i - 1];
+                    row.push_back(prev[j - 1] + prev[j]);
+                }
+            }
+
+            r.push_back(row);
         }
 
-        return true;
+        return r;
     }
-}  // namespace isogram
+}  // namespace pascals_triangle
 
 int main() {
-    const bool actual = isogram::is_isogram("");
+    const std::vector<std::vector<int>> actual{ pascals_triangle::generate_rows(3) };
     return 0;
 }
