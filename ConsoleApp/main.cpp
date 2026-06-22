@@ -1,30 +1,40 @@
 ﻿#include <vector>
+#include <iostream>
+#include <stdexcept>
+#include <cmath>
+#include <format>
 
-namespace pascals_triangle {
-    std::vector<std::vector<int>> generate_rows(int count)
+namespace perfect_numbers {
+    enum class classification {
+        perfect,
+        abundant,
+        deficient
+    };
+
+    classification classify(int number);
+    classification classify(int number)
     {
-        std::vector<std::vector<int>> r{};
+        if (number < 1) throw std::domain_error("Invalid number");
+        size_t n{static_cast<size_t>(number)};
+        size_t sum{};
 
-        for (size_t i{ 0 }; i < count; ++i) {
-            std::vector<int> row{};
-            for (size_t j{ 0 }; j <= i; ++j) {
-                if (i == 0 || j == 0 || j == i) {
-                    row.push_back(1);
-                }
-                else {
-                    auto prev = r[i - 1];
-                    row.push_back(prev[j - 1] + prev[j]);
-                }
-            }
-
-            r.push_back(row);
+        for (int i{1}, limit{number / 2}; i <= limit; ++i) {
+            if (number % i != 0) continue;
+            sum += static_cast<size_t>(i);
         }
 
-        return r;
+        if (sum < n) return classification::deficient;
+        if (sum == n) return classification::perfect;
+        return classification::abundant;
     }
-}  // namespace pascals_triangle
+} // namespace perfect_numbers
 
 int main() {
-    const std::vector<std::vector<int>> actual{ pascals_triangle::generate_rows(3) };
+    //perfect_numbers::classify(6);
+    //perfect_numbers::classify(28);
+    //perfect_numbers::classify(12);
+    //perfect_numbers::classify(24);
+    //perfect_numbers::classify(8);
+    std::cout << (perfect_numbers::classify(33550336) == perfect_numbers::classification::perfect) << '\n';
     return 0;
 }
