@@ -3,38 +3,31 @@
 #include <stdexcept>
 #include <cmath>
 #include <format>
+#include <map>
+#include <string>
+#include <cctype>
 
-namespace perfect_numbers {
-    enum class classification {
-        perfect,
-        abundant,
-        deficient
+namespace scrabble_score {
+    static std::map<char, int> scores{
+        {'A', 1}, {'E', 1}, {'I', 1}, {'O', 1}, {'U', 1}, {'L', 1}, {'N', 1}, {'R', 1}, {'S', 1}, {'T', 1},
+        {'D', 2}, {'G', 2},
+        {'B', 3}, {'C', 3}, {'M', 3}, {'P', 3},
+        {'F', 4}, {'H', 4}, {'V', 4}, {'W', 4}, {'Y', 4},
+        {'K', 5},
+        {'J', 8}, {'X', 8},
+        {'Q', 10}, {'Z', 10}
     };
 
-    classification classify(int number);
-    classification classify(int number)
-    {
-        if (number < 1) throw std::domain_error("Invalid number");
-        size_t n{static_cast<size_t>(number)};
-        size_t sum{};
-
-        for (int i{1}, limit{number / 2}; i <= limit; ++i) {
-            if (number % i != 0) continue;
-            sum += static_cast<size_t>(i);
+    int score(const std::string& input) {
+        int r{};
+        for (const auto& c : input) {
+            auto cu = std::toupper(c);
+            r += scores[cu];
         }
-
-        if (sum < n) return classification::deficient;
-        if (sum == n) return classification::perfect;
-        return classification::abundant;
+        return r;
     }
-} // namespace perfect_numbers
+}  // namespace scrabble_score
 
 int main() {
-    //perfect_numbers::classify(6);
-    //perfect_numbers::classify(28);
-    //perfect_numbers::classify(12);
-    //perfect_numbers::classify(24);
-    //perfect_numbers::classify(8);
-    std::cout << (perfect_numbers::classify(33550336) == perfect_numbers::classification::perfect) << '\n';
     return 0;
 }
