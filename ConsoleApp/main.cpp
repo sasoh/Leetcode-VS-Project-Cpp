@@ -6,28 +6,36 @@
 #include <map>
 #include <string>
 #include <cctype>
+#include <algorithm>
 
-namespace scrabble_score {
-    static std::map<char, int> scores{
-        {'A', 1}, {'E', 1}, {'I', 1}, {'O', 1}, {'U', 1}, {'L', 1}, {'N', 1}, {'R', 1}, {'S', 1}, {'T', 1},
-        {'D', 2}, {'G', 2},
-        {'B', 3}, {'C', 3}, {'M', 3}, {'P', 3},
-        {'F', 4}, {'H', 4}, {'V', 4}, {'W', 4}, {'Y', 4},
-        {'K', 5},
-        {'J', 8}, {'X', 8},
-        {'Q', 10}, {'Z', 10}
-    };
+namespace all_your_base {
+    std::vector<unsigned int> convert(int inBase, std::vector<unsigned int> digits, int outBase) {
+        if (inBase < 2 || outBase < 2) throw std::invalid_argument("Base can't be less than 2");
 
-    int score(const std::string& input) {
-        int r{};
-        for (const auto& c : input) {
-            auto cu = std::toupper(c);
-            r += scores[cu];
+        std::vector<unsigned int> r{};
+        int base10{};
+        std::string digitsString{};
+        for (size_t i{ 0 }; i < digits.size(); ++i) {
+            auto d = digits[digits.size() - 1 - i];
+            if (d >= inBase) throw std::invalid_argument("Invalid digit argument");
+            digitsString.insert(digitsString.begin(), std::to_string(d)[0]);
+            base10 += d * std::pow(inBase, i);
         }
+
+        int base10copy{ base10 };
+        int n = base10copy % outBase;
+        while (base10copy > 0) {
+            r.push_back(n);
+            base10copy /= outBase;
+            n = base10copy % outBase;
+        }
+        std::reverse(r.begin(), r.end());
         return r;
     }
-}  // namespace scrabble_score
+}  // namespace all_your_base
 
 int main() {
+    std::vector<unsigned int> in_digits{ 1, 1, 0 };
+    std::vector<unsigned int> out_digits = all_your_base::convert(2, in_digits, 2);
     return 0;
 }
