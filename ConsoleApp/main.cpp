@@ -1,41 +1,94 @@
-﻿#include <vector>
-#include <iostream>
-#include <stdexcept>
-#include <cmath>
-#include <format>
-#include <map>
+﻿#include <utility>
 #include <string>
-#include <cctype>
-#include <algorithm>
+#include <iostream>
 
-namespace all_your_base {
-    std::vector<unsigned int> convert(int inBase, std::vector<unsigned int> digits, int outBase) {
-        if (inBase < 2 || outBase < 2) throw std::invalid_argument("Base can't be less than 2");
+namespace robot_simulator {
+    enum class Bearing {
+        EAST = 0,
+        SOUTH = 1,
+        WEST = 2,
+        NORTH = 3
+    };
 
-        std::vector<unsigned int> r{};
-        int base10{};
-        std::string digitsString{};
-        for (size_t i{ 0 }; i < digits.size(); ++i) {
-            auto d = digits[digits.size() - 1 - i];
-            if (d >= inBase) throw std::invalid_argument("Invalid digit argument");
-            digitsString.insert(digitsString.begin(), std::to_string(d)[0]);
-            base10 += d * std::pow(inBase, i);
-        }
+    class Robot {
+    public:
+        Robot();
+        Robot(std::pair<int, int> position, Bearing bearing);
+        const std::pair<int, int> get_position() const;
+        Bearing get_bearing() const;
+        void execute_sequence(const std::string& sequence);
+        void turn_left();
+        void turn_right();
+        void advance();
+    private:
+        std::pair<int, int> m_pos{};
+        Bearing m_bearing{};
+    };
 
-        int base10copy{ base10 };
-        int n = base10copy % outBase;
-        while (base10copy > 0) {
-            r.push_back(n);
-            base10copy /= outBase;
-            n = base10copy % outBase;
-        }
-        std::reverse(r.begin(), r.end());
-        return r;
+    Robot::Robot() : m_pos{ 0, 0 }, m_bearing{ Bearing::NORTH } {}
+
+    Robot::Robot(std::pair<int, int> position, Bearing bearing) : m_pos{ position }, m_bearing{ bearing } {}
+
+    const std::pair<int, int> Robot::get_position() const
+    {
+        return m_pos;
     }
-}  // namespace all_your_base
+
+    Bearing Robot::get_bearing() const
+    {
+        return m_bearing;
+    }
+
+    void Robot::execute_sequence(const std::string& sequence)
+    {
+        for (const auto& c : sequence) {
+            if (c == 'A') advance();
+            if (c == 'L') turn_left();
+            if (c == 'R') turn_right();
+        }
+    }
+
+    void Robot::turn_left()
+    {
+        int direction = (int)m_bearing;
+        direction--;
+        if (direction < 0) direction = 3;
+        m_bearing = static_cast<Bearing>(direction);
+    }
+
+    void Robot::turn_right()
+    {
+        int direction = (int)m_bearing;
+        direction++;
+        if (direction > 3) direction = 0;
+        m_bearing = static_cast<Bearing>(direction);
+    }
+
+    void Robot::advance()
+    {
+        if (m_bearing == Bearing::EAST) {
+            m_pos.first++;
+        }
+        else if (m_bearing == Bearing::SOUTH) {
+            m_pos.second--;
+        }
+        else if (m_bearing == Bearing::WEST) {
+            m_pos.first--;
+        }
+        else {
+            m_pos.second++;
+        }
+    }
+}  // namespace robot_simulator
 
 int main() {
-    std::vector<unsigned int> in_digits{ 1, 1, 0 };
-    std::vector<unsigned int> out_digits = all_your_base::convert(2, in_digits, 2);
+    //const Robot r;
+    //const std::pair<int, int> expected_robot_position{ 0, 0 };
+    //REQUIRE(expected_robot_position == r.get_position());
+    //REQUIRE(Bearing::NORTH == r.get_bearing());
+
+    //const std::pair<int, int> robot_position{ -1, -1 };
+    //const Bearing robot_bearing{ Bearing::SOUTH };
+    //const Robot r{ robot_position, robot_bearing };
     return 0;
 }
