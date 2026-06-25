@@ -1,31 +1,40 @@
-﻿#include <utility>
-#include <string>
+﻿#include <cctype>
 #include <iostream>
-#include <cmath>
+#include <string>
+#include <vector>
+#include <format>
+#include <algorithm>
 
-namespace darts {
-    //If the dart lands outside the target, player earns no points(0 points).
-    //If the dart lands in the outer circle of the target, player earns 1 point.
-    //If the dart lands in the middle circle of the target, player earns 5 points.
-    //If the dart lands in the inner circle of the target, player earns 10 points.
-    //darts::score(-0.1f, -0.1f)
-    int score(float x, float y) {
-        float d = std::sqrt(x * x + y * y);
-        if (d <= 1) return 10;
-        if (d <= 5) return 5;
-        if (d <= 10) return 1;
-        return 0;
+namespace isbn_verifier {
+    //isbn_verifier::is_valid("3-598-21508-8"));
+    bool is_valid(const std::string& input) {
+        std::vector<int> digits{};
+        for (const auto& c : input) {
+            if (!isdigit(c)) {
+                if (c != '-') return false;
+                continue;
+            }
+            digits.push_back(c - '0');
+        }
+
+        if (digits.size() == 9 && input[input.size() - 1] == 'X') {
+            digits.push_back(10);
+        }
+
+        if (digits.size() != 10) return false;
+        int sum{};
+        for (int i = 1, limit = digits.size(); i <= limit; ++i) {
+            sum += digits[limit - i] * i;
+        }
+        return (sum % 11 == 0);
     }
-}  // namespace darts
+
+}  // namespace isbn_verifier
+
 
 int main() {
-    //const Robot r;
-    //const std::pair<int, int> expected_robot_position{ 0, 0 };
-    //REQUIRE(expected_robot_position == r.get_position());
-    //REQUIRE(Bearing::NORTH == r.get_bearing());
-
-    //const std::pair<int, int> robot_position{ -1, -1 };
-    //const Bearing robot_bearing{ Bearing::SOUTH };
-    //const Robot r{ robot_position, robot_bearing };
+    std::cout << std::format("{}\n", isbn_verifier::is_valid("3-598-21508-8"));
+    std::cout << std::format("{}\n", isbn_verifier::is_valid("3-598-21508-9"));
+    std::cout << std::format("{}\n", isbn_verifier::is_valid("3598P215088"));
     return 0;
 }
