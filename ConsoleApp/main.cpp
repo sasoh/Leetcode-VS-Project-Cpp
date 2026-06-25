@@ -1,85 +1,22 @@
 ﻿#include <utility>
 #include <string>
 #include <iostream>
+#include <cmath>
 
-namespace robot_simulator {
-    enum class Bearing {
-        EAST = 0,
-        SOUTH = 1,
-        WEST = 2,
-        NORTH = 3
-    };
-
-    class Robot {
-    public:
-        Robot();
-        Robot(std::pair<int, int> position, Bearing bearing);
-        const std::pair<int, int> get_position() const;
-        Bearing get_bearing() const;
-        void execute_sequence(const std::string& sequence);
-        void turn_left();
-        void turn_right();
-        void advance();
-    private:
-        std::pair<int, int> m_pos{};
-        Bearing m_bearing{};
-    };
-
-    Robot::Robot() : m_pos{ 0, 0 }, m_bearing{ Bearing::NORTH } {}
-
-    Robot::Robot(std::pair<int, int> position, Bearing bearing) : m_pos{ position }, m_bearing{ bearing } {}
-
-    const std::pair<int, int> Robot::get_position() const
-    {
-        return m_pos;
+namespace darts {
+    //If the dart lands outside the target, player earns no points(0 points).
+    //If the dart lands in the outer circle of the target, player earns 1 point.
+    //If the dart lands in the middle circle of the target, player earns 5 points.
+    //If the dart lands in the inner circle of the target, player earns 10 points.
+    //darts::score(-0.1f, -0.1f)
+    int score(float x, float y) {
+        float d = std::sqrt(x * x + y * y);
+        if (d <= 1) return 10;
+        if (d <= 5) return 5;
+        if (d <= 10) return 1;
+        return 0;
     }
-
-    Bearing Robot::get_bearing() const
-    {
-        return m_bearing;
-    }
-
-    void Robot::execute_sequence(const std::string& sequence)
-    {
-        for (const auto& c : sequence) {
-            if (c == 'A') advance();
-            if (c == 'L') turn_left();
-            if (c == 'R') turn_right();
-        }
-    }
-
-    void Robot::turn_left()
-    {
-        int direction = (int)m_bearing;
-        direction--;
-        if (direction < 0) direction = 3;
-        m_bearing = static_cast<Bearing>(direction);
-    }
-
-    void Robot::turn_right()
-    {
-        int direction = (int)m_bearing;
-        direction++;
-        if (direction > 3) direction = 0;
-        m_bearing = static_cast<Bearing>(direction);
-    }
-
-    void Robot::advance()
-    {
-        if (m_bearing == Bearing::EAST) {
-            m_pos.first++;
-        }
-        else if (m_bearing == Bearing::SOUTH) {
-            m_pos.second--;
-        }
-        else if (m_bearing == Bearing::WEST) {
-            m_pos.first--;
-        }
-        else {
-            m_pos.second++;
-        }
-    }
-}  // namespace robot_simulator
+}  // namespace darts
 
 int main() {
     //const Robot r;
