@@ -11,7 +11,7 @@ namespace isbn_verifier {
         std::vector<int> digits{};
         for (const auto& c : input) {
             if (!isdigit(c)) {
-                if (c != '-') return false;
+                if (c != '-' && c != 'X') return false;
                 continue;
             }
             digits.push_back(c - '0');
